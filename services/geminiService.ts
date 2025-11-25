@@ -91,6 +91,7 @@ export const sendChatMessage = async (
 
   try {
     const genAI = new GoogleGenerativeAI(apiKey);
+    // Use the same model initialization for chat to avoid potential issues with systemInstruction param compatibility
     // @ts-ignore
     const model = genAI.getGenerativeModel(modelParams, requestOptions);
     
@@ -116,31 +117,25 @@ export const sendChatMessage = async (
       `;
     }
 
-    // Convert history to Gemini format
-    const chatHistory = history.map(msg => ({
-      role: msg.role === MessageRole.USER ? 'user' : 'model',
-      parts: [{ text: msg.text }]
-    }));
-
-    // Start chat with history and system instruction
-    // Note: systemInstruction needs to be passed to getGenerativeModel in newer versions or simulated in history
-    // For @google/generative-ai, systemInstruction is supported in getGenerativeModel
+    // Fallback strategy: Treat chat as a single completion request if startChat fails or for better compatibility
+    // Construct a full prompt with history manually
+    let fullPrompt = `${systemInstruction}\n\n`;
     
-    // Re-initialize model with system instruction for chat
-    const chatModel = genAI.getGenerativeModel({
-        ...modelParams,
-        systemInstruction: systemInstruction
-    }, requestOptions);
-
-    const chat = chatModel.startChat({
-      history: chatHistory,
+    // Add history
+    history.forEach(msg => {
+      const roleName = msg.role === MessageRole.USER ? 'User' : 'Sparky';
+      fullPrompt += `${roleName}: ${msg.text}\n`;
     });
+    
+    // Add new message
+    fullPrompt += `User: ${newMessage}\nSparky:`;
 
-    const result = await chat.sendMessage(newMessage);
+    const result = await model.generateContent(fullPrompt);
     return result.response.text() || "...";
 
   } catch (error) {
     console.error("Chat error:", error);
-    return "...";
+    // Fallback error message
+    return language === 'zh' ? "我有点累了，稍后再试..." : "I need a break, try again later...";
   }
 };

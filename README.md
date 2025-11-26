@@ -1,10 +1,10 @@
 <div align="center">
 <!-- You can add a logo here if available -->
-<h1>🎓 ZLearn - 通用游戏化学习平台</h1>
+<h1>🎓 Lalalearn - 通用游戏化学习平台</h1>
 <p><em>让学习成为一场充满趣味的冒险！</em></p>
 </div>
 
-**ZLearn** 是由 AI 驱动的通用游戏化学习平台，支持任意领域的知识培训。不同于传统学习软件，ZLearn 采用闯关机制，将枯燥的知识点转化为有趣的挑战。
+**Lalalearn** 是由 AI 驱动的通用游戏化学习平台，支持任意领域的知识培训。不同于传统学习软件，Lalalearn 采用闯关机制，将枯燥的知识点转化为有趣的挑战。
 
 🚀 **最新版本**: MVP Demo v1.0 - Zeabur 员工培训专用版已发布！
 
@@ -40,9 +40,11 @@
 
 ### 4. 🚀 MVP Demo: Zeabur 员工培训
 专为 Zeabur 市场/销售团队设计的培训课程：
-- **10 个关卡**: 涵盖 Zeabur 核心概念和优势
-- **快速上手**: 10 分钟掌握产品卖点
-- **实战导向**: 帮助销售人员自信介绍产品
+- **10 张地图、100 关卡**: 按地图和难度标签展示，可筛选分组
+- **逐关解锁机制**: 完成前一关才能解锁下一关
+- **智能评分系统**: 按尝试次数降星（首次3星，错1次2星，错≥2次1星）
+- **复盘面板**: 显示完成关卡/已获星数/正确率/错题列表/昨日学习时长
+- **AI 教练总结**: 一键生成学习总结，分析薄弱点
 
 ---
 
@@ -91,8 +93,8 @@
 2. **本地运行**:
    ```bash
    # 克隆项目
-   git clone https://github.com/fangligamedev/ZLearn.git
-   cd ZLearn
+   git clone https://github.com/fangligamedev/Lalalearn.git
+   cd Lalalearn
 
    # 安装依赖
    npm install
@@ -106,7 +108,7 @@
 
 3. **选择课程**:
    - **"Python 少儿编程"**: 原版编程学习体验
-   - **"Zeabur 云平台速成"**: 🆕 新增 - 员工培训课程
+   - **"Zeabur 云平台速成"**: 🆕 新增 - 10张地图、100关卡员工培训课程
 
 ---
 
@@ -135,6 +137,7 @@
 | [📋 开发计划](docs/03_SDD_DEVELOPMENT_PLAN.md) | Phase 规划、迭代路线图 | ✅ 完成 |
 | [🎯 MVP Demo 设计](docs/04_MVP_DEMO_ZEABUR.md) | Zeabur 培训课程详细设计 | ✅ 完成 |
 | [⚡ SDD 开发步骤](docs/05_MVP_SDD_STEPS.md) | 具体实现步骤和代码规范 | ✅ 完成 |
+| [📊 11月27日计划](docs/06_NOV27_CONTENT_IMPORT_ANALYTICS.md) | 内容导入 + 数据分析系统 | 📋 规划中 |
 
 ---
 
@@ -142,15 +145,23 @@
 
 ### Phase 1: MVP Demo ✅ 已完成
 - [x] 概念题型组件 (单选/判断/填空)
-- [x] Zeabur 培训课程 (10 关卡)
+- [x] Zeabur 培训课程 (10 张地图、100 关卡)
 - [x] 课程切换功能
-- [x] 基础游戏体验
+- [x] 地图/难度筛选和分组
+- [x] 逐关解锁机制
+- [x] 按尝试次数降星评分
+- [x] 复盘面板 (完成关卡/星数/正确率/错题列表/昨日学习时长)
+- [x] AI 教练 (专业严谨型 + 美嘉音色)
+- [x] TTS 语音朗读功能
 
-### Phase 2: 架构升级 🔄 进行中
-- [ ] AI 内容生成服务
-- [ ] 多 LLM 支持 (Gemini/OpenAI/Anthropic)
-- [ ] 配置化系统
-- [ ] IndexedDB 数据存储
+### Phase 2: 内容导入与数据分析 🔄 进行中 (11月27日)
+- [ ] PDF/MD/URL 内容导入服务
+- [ ] AI 课程生成 (可配置地图数/关卡数/难度分布)
+- [ ] IndexedDB 数据持久化
+- [ ] 游戏化埋点系统
+- [ ] 留存分析引擎 (D1/D7/D30)
+- [ ] 学习习惯分析
+- [ ] Zeabur 数据备份方案
 
 ### Phase 3: 完整功能 📋 规划中
 - [ ] 艾宾浩斯复习系统
@@ -168,7 +179,7 @@
 
 ## 🤝 贡献指南
 
-欢迎参与 ZLearn 的开发！
+欢迎参与 Lalalearn 的开发！
 
 1. **Fork** 本仓库
 2. 创建特性分支: `git checkout -b feature/amazing-feature`
@@ -194,7 +205,7 @@ MIT License - 详见 [LICENSE](LICENSE) 文件
 
 **联系方式**:
 - GitHub: [@fangligamedev](https://github.com/fangligamedev)
-- 项目主页: [ZLearn](https://github.com/fangligamedev/ZLearn)
+- 项目主页: [Lalalearn](https://github.com/fangligamedev/Lalalearn)
 
 ---
 
@@ -202,7 +213,7 @@ MIT License - 详见 [LICENSE](LICENSE) 文件
 
 感谢 **Zeabur** 提供优秀的 AI Hub 和部署平台，让这个项目成为可能！
 
-特别感谢所有参与测试和反馈的用户，你们让 ZLearn 变得更好！
+特别感谢所有参与测试和反馈的用户，你们让 Lalalearn 变得更好！
 
 ---
 
@@ -210,6 +221,6 @@ MIT License - 详见 [LICENSE](LICENSE) 文件
 
 **让学习成为一种享受！** 🎓✨
 
-[🚀 立即体验](https://github.com/fangligamedev/ZLearn) • [📖 设计文档](docs/) • [🐛 报告问题](https://github.com/fangligamedev/ZLearn/issues)
+[🚀 立即体验](https://github.com/fangligamedev/Lalalearn) • [📖 设计文档](docs/) • [🐛 报告问题](https://github.com/fangligamedev/Lalalearn/issues)
 
 </div>

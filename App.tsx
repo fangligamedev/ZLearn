@@ -34,8 +34,8 @@ const App: React.FC = () => {
     language: 'zh',
     hasSeenTutorial: false,
     settings: {
-      voiceURI: null,
-      persona: 'gentle'
+      voiceURI: '美嘉',
+      persona: 'professional'
     },
     currentBank: 'A'
   });
@@ -68,8 +68,9 @@ const App: React.FC = () => {
   const [showConceptResult, setShowConceptResult] = useState(false);
   const [conceptIsCorrect, setConceptIsCorrect] = useState<boolean | null>(null);
   const [conceptAttempts, setConceptAttempts] = useState<number>(0); // 用于评星扣分
-  const [conceptHistory, setConceptHistory] = useState<{ levelId: number; question: string; correct: boolean; userAnswer: string | boolean | null; map?: string }[]>([]);
+  const [conceptHistory, setConceptHistory] = useState<{ levelId: number; question: string; correct: boolean; userAnswer: string | boolean | null; map?: string; durationMs?: number; answeredAt?: number }[]>([]);
   const [conceptSummary, setConceptSummary] = useState<{ map?: string; stars?: number; lastLevel?: number } | null>(null);
+  const [conceptStartTime, setConceptStartTime] = useState<number>(Date.now());
 
   const ui = UI_STRINGS[userState.language];
   const codeLevels = getLevels(userState.language, userState.currentBank);
@@ -77,6 +78,15 @@ const App: React.FC = () => {
   const isConceptCourse = currentCourse.type === 'concept';
   const isConceptSession = Boolean(isConceptCourse && currentConceptLevel && activeLevelId);
   const isCodeSession = Boolean(!isConceptCourse && activeLevelId && currentLevelData);
+  const totalTimeYesterdayMs = React.useMemo(() => {
+    const now = Date.now();
+    const startOfToday = new Date();
+    startOfToday.setHours(0, 0, 0, 0);
+    const startOfYesterday = startOfToday.getTime() - 24 * 60 * 60 * 1000;
+    return conceptHistory
+      .filter(h => (h.answeredAt || 0) >= startOfYesterday && (h.answeredAt || 0) < startOfToday.getTime())
+      .reduce((acc, cur) => acc + (cur.durationMs || 0), 0);
+  }, [conceptHistory]);
   const goToNextConceptLevel = () => {
     if (!currentCourse || currentCourse.type !== 'concept' || !currentConceptLevel) return;
     const levels = currentCourse.levels as ConceptLevel[];
@@ -90,6 +100,11 @@ const App: React.FC = () => {
       setShowVictory(false);
       setConceptAttempts(0);
       setConceptSummary(null);
+      setConceptStartTime(Date.now());
+      const firstQuestionText = next.questions?.[0]?.type === 'fill_blank'
+        ? (next.questions[0] as any).question
+        : (next.questions?.[0] as any)?.question || (next.questions?.[0] as any)?.statement || next.title;
+      setMessages([{ role: MessageRole.MODEL, text: firstQuestionText }]);
     } else {
       handleNextLevel();
     }
@@ -140,12 +155,11 @@ const App: React.FC = () => {
   // Level Initialization & Timer
   useEffect(() => {
     if (activeLevelId && currentLevelData) {
-      setMessages([{ role: MessageRole.MODEL, text: currentLevelData.description || ui.welcomeChat }]);
+      setMessages([{ role: MessageRole.MODEL, text: currentLevelData.task || currentLevelData.description || ui.welcomeChat }]);
       setCode(currentLevelData.starterCode || '');
       setOutput('');
       setRunStatus('idle');
       
-      // Init Timer
       setTimeLeft(currentLevelData.timeLimit || 60);
       if (timerRef.current) clearInterval(timerRef.current);
       
@@ -161,6 +175,11 @@ const App: React.FC = () => {
         });
       }, 1000);
 
+    } else if (isConceptSession && currentConceptLevel) {
+      const firstQuestionText = currentConceptLevel.questions?.[0]?.type === 'fill_blank'
+        ? (currentConceptLevel.questions[0] as any).question
+        : (currentConceptLevel.questions?.[0] as any)?.question || (currentConceptLevel.questions?.[0] as any)?.statement || currentConceptLevel.title;
+      setMessages([{ role: MessageRole.MODEL, text: firstQuestionText }]);
     } else {
       if (timerRef.current) clearInterval(timerRef.current);
       if (userState.id !== 'default') {
@@ -171,7 +190,7 @@ const App: React.FC = () => {
     return () => {
       if (timerRef.current) clearInterval(timerRef.current);
     };
-  }, [activeLevelId, currentLevelData, userState.language, userState.currentBank]);
+  }, [activeLevelId, currentLevelData, userState.language, userState.currentBank, isConceptSession, currentConceptLevel]);
 
 
   // --- User Management Handlers ---
@@ -187,7 +206,7 @@ const App: React.FC = () => {
       unlockedBadges: [],
       language: userState.language, 
       hasSeenTutorial: false,
-      settings: { voiceURI: null, persona: 'gentle' },
+      settings: { voiceURI: '美嘉', persona: 'professional' },
       currentBank: bank 
     };
     setAllPlayers(prev => [...prev, newUser]);
@@ -210,6 +229,8 @@ const App: React.FC = () => {
     setShowConceptResult(false);
     setConceptAnswer(null);
     setConceptIsCorrect(null);
+    setConceptAttempts(0);
+    setConceptStartTime(Date.now());
     setShowUserSelect(true);
   };
 
@@ -230,6 +251,12 @@ const App: React.FC = () => {
         setShowConceptResult(false);
         setConceptIsCorrect(null);
         setCurrentLevelData(null);
+        setConceptAttempts(0);
+        setConceptStartTime(Date.now());
+        const firstQuestionText = conceptLevel.questions?.[0]?.type === 'fill_blank'
+          ? (conceptLevel.questions[0] as any).question
+          : (conceptLevel.questions?.[0] as any)?.question || (conceptLevel.questions?.[0] as any)?.statement || conceptLevel.title;
+        setMessages([{ role: MessageRole.MODEL, text: firstQuestionText }]);
       }
       return;
     }
@@ -267,6 +294,7 @@ const App: React.FC = () => {
     setConceptAnswer(null);
     setConceptIsCorrect(null);
     setConceptAttempts(0);
+    setConceptStartTime(Date.now());
 
     if (courseId === ZEABUR_COURSE.id) {
       const course = getCourseById(courseId);
@@ -275,6 +303,10 @@ const App: React.FC = () => {
         const target = levels.find(l => l.id === conceptProgress.currentLevel) || levels[0];
         setCurrentConceptLevel(target);
         setActiveLevelId(target.id);
+        const firstQuestionText = target.questions?.[0]?.type === 'fill_blank'
+          ? (target.questions[0] as any).question
+          : (target.questions?.[0] as any)?.question || (target.questions?.[0] as any)?.statement || target.title;
+        setMessages([{ role: MessageRole.MODEL, text: firstQuestionText }]);
       }
     } else {
       setCurrentConceptLevel(null);
@@ -317,12 +349,16 @@ const App: React.FC = () => {
     setConceptAnswer(answer);
     setConceptIsCorrect(isCorrect);
     setShowConceptResult(true);
+    const answeredAt = Date.now();
+    const durationMs = Math.max(0, answeredAt - conceptStartTime);
     setConceptHistory(prev => [...prev, {
       levelId: currentConceptLevel.id,
       question: (question as any).question || (question as any).statement || '',
       correct: isCorrect,
       userAnswer: answer,
-      map: currentConceptLevel.map
+      map: currentConceptLevel.map,
+      durationMs,
+      answeredAt
     }]);
 
     if (isCorrect) {
@@ -498,6 +534,7 @@ const App: React.FC = () => {
           course={currentCourse.type === 'concept' ? currentCourse : null}
           conceptProgress={conceptProgress}
           history={conceptHistory}
+          totalTimeYesterdayMs={totalTimeYesterdayMs}
           onGenerateSummary={async () => {
             const mistakes = conceptHistory.filter(h => !h.correct).slice(-5).map(m => `#${m.levelId} ${m.question} | ans: ${m.userAnswer}`);
             const prompt = `作为教练，基于这些错题和进度给出3条精炼建议，中文：\n${mistakes.join('\n') || '暂无错题'}`;
@@ -617,6 +654,8 @@ const App: React.FC = () => {
                     setConceptAnswer(null);
                     setConceptIsCorrect(null);
                     setShowVictory(false);
+                    setConceptAttempts(0);
+                    setConceptStartTime(Date.now());
                   }}
                   className="flex-1 py-3 rounded-xl font-bold bg-slate-800 hover:bg-slate-700 border border-slate-700 transition-colors"
                 >

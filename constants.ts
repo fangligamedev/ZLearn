@@ -126,7 +126,7 @@ const LEVELS_C_ZH: LevelData[] = [
   {
     id: 2,
     title: "我的名字 (C卷)",
-    description: "告诉裁判你是谁。",
+    description: "告诉教练你是谁。",
     task: "创建变量 `me` 存储你的名字(字符串)，并打印。",
     starterCode: "",
     concepts: ["变量"],
@@ -173,12 +173,12 @@ export const getLevels = (lang: Language, bank: 'A'|'B'|'C' = 'A') => {
 };
 
 export const COACH_PERSONAS: Record<CoachPersona, string> = {
-  gentle: "You are a very gentle, patient, and sweet Nanny-like tutor. Use lots of hearts and soft language.",
-  sarcastic: "You are a funny, slightly sarcastic robot. You tease the user playfully about their code but still help them.",
-  professional: "You are a serious, professional computer science professor. Be precise, concise, and academic.",
-  concise: "You are extremely efficient. Give shortest possible hints. No fluff.",
-  stepbystep: "You are a methodical guide. Always break down instructions into Step 1, Step 2, Step 3.",
-  mentor: "You are a professional, concise instructor. Give direct guidance, highlight key docs points, avoid small talk."
+  gentle: "风格：温柔鼓励。用简短话语肯定用户、给提示，语气柔和，不讽刺。",
+  sarcastic: "风格：毒舌压力。简洁指出错误，用轻微调侃督促改进，仍需给出可执行建议。",
+  professional: "风格：专业严谨。用精炼、结构化的技术要点回答，先结论，再简要理由与步骤，避免寒暄。",
+  concise: "风格：极简效率。只给最短可行动提示，去掉多余修饰和客套。",
+  stepbystep: "风格：新手引导。把任务拆成 3 步内的具体操作，逐步确认。",
+  mentor: "风格：职业化教练。围绕题目/关卡给出结论+关键原因+下一步建议，语言简练直接。"
 };
 
 export const UI_STRINGS = {
@@ -255,14 +255,14 @@ export const UI_STRINGS = {
     resetBtn: "重置",
     runBtn: "提交运行",
     casting: "编译中...",
-    outputTitle: "裁判终端 (Terminal)",
+    outputTitle: "教练终端 (Terminal)",
     success: "运行成功",
     tryAgain: "运行失败",
     placeholder: "# 比赛倒计时中...输入代码...",
     mission: "本关任务",
     coachTitle: "ZLearn 智能教练",
-    coachSubtitle: "AI 导师",
-    thinking: "裁判判定中...",
+    coachSubtitle: "AI 教练",
+    thinking: "教练判定中...",
     chatPlaceholder: "请求提示 (不扣分)...",
     welcomeChat: "准备好比赛了吗？时间紧迫，只有最快的程序员才能获胜！⏱️",
     backToMap: "返回大厅",
@@ -275,15 +275,16 @@ export const UI_STRINGS = {
     tapToSpeak: "点击说话",
     listening: "正在听...",
     settings: "设置",
-    voice: "裁判音色",
+    voice: "教练音色",
     testVoice: "试听",
-    persona: "裁判风格",
+    persona: "教练风格",
     personas: {
       gentle: "温柔鼓励型",
       sarcastic: "毒舌压力型",
       professional: "专业严谨型",
       concise: "极速效率型",
-      stepbystep: "新手引导型"
+      stepbystep: "新手引导型",
+      mentor: "职业化教练"
     },
     tutorial: {
       welcome: "欢迎来到 PySparky 派对模式！🏆 这是一个拼速度和准确率的游戏！",

@@ -20,9 +20,10 @@ interface ReviewModalProps {
   };
   history: HistoryItem[];
   onGenerateSummary: () => Promise<string>;
+  totalTimeYesterdayMs: number;
 }
 
-const ReviewModal: React.FC<ReviewModalProps> = ({ open, onClose, course, conceptProgress, history, onGenerateSummary }) => {
+const ReviewModal: React.FC<ReviewModalProps> = ({ open, onClose, course, conceptProgress, history, onGenerateSummary, totalTimeYesterdayMs }) => {
   const [summary, setSummary] = useState<string>('');
   const [loading, setLoading] = useState(false);
 
@@ -33,6 +34,7 @@ const ReviewModal: React.FC<ReviewModalProps> = ({ open, onClose, course, concep
   const accuracy =
     history.length > 0 ? Math.round((history.filter(h => h.correct).length / history.length) * 100) : 0;
   const mistakes = history.filter(h => !h.correct).slice(-10).reverse();
+  const totalMinutes = Math.round(totalTimeYesterdayMs / 1000 / 60);
 
   const handleGenerate = async () => {
     setLoading(true);
@@ -68,6 +70,10 @@ const ReviewModal: React.FC<ReviewModalProps> = ({ open, onClose, course, concep
             <div className="p-3 rounded-xl bg-slate-800 border border-slate-700 text-white">
               <div className="text-xs text-slate-400">正确率</div>
               <div className="text-2xl font-bold">{accuracy}%</div>
+            </div>
+            <div className="p-3 rounded-xl bg-slate-800 border border-slate-700 text-white col-span-3">
+              <div className="text-xs text-slate-400">昨日学习时长</div>
+              <div className="text-lg font-bold">{totalMinutes} 分钟</div>
             </div>
           </div>
 

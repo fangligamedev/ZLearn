@@ -1,6 +1,6 @@
 
 import React, { useState, useEffect, useRef } from 'react';
-import { Bot, Map as MapIcon, RotateCcw, Play, Languages, User, Star, Terminal, AlertTriangle, CheckCircle, XCircle, Timer, Zap, Trophy, Users } from 'lucide-react';
+import { Bot, Map as MapIcon, RotateCcw, Play, Languages, User, Star, Terminal, AlertTriangle, CheckCircle, XCircle, Timer, Zap, Trophy, Users, BarChart3 } from 'lucide-react';
 import CodeEditor from './components/CodeEditor';
 import CoachChat from './components/CoachChat';
 import LevelMap from './components/LevelMap';
@@ -8,9 +8,11 @@ import TutorialOverlay from './components/TutorialOverlay';
 import VictoryModal from './components/VictoryModal';
 import LeaderboardModal from './components/LeaderboardModal'; 
 import UserSelectModal from './components/UserSelectModal';   
-import { getLevels, UI_STRINGS, LEVEL_COUNT } from './constants';
+import QuestionRenderer from './components/questions/QuestionRenderer';
+import ReviewModal from './components/ReviewModal';
+import { getLevels, UI_STRINGS, LEVEL_COUNT, getCourseById, PYTHON_CODE_COURSE, ZEABUR_COURSE } from './constants';
 import { validateCodeWithGemini, sendChatMessage } from './services/geminiService';
-import { UserState, MessageRole, ChatMessage, CoachPersona, LevelData } from './types';
+import { UserState, MessageRole, ChatMessage, CoachPersona, LevelData, ConceptLevel, ConceptQuestion } from './types';
 import { audio } from './services/audioService';
 
 const App: React.FC = () => {
@@ -18,6 +20,7 @@ const App: React.FC = () => {
   const [allPlayers, setAllPlayers] = useState<UserState[]>([]);
   const [showUserSelect, setShowUserSelect] = useState(true);
   const [showLeaderboard, setShowLeaderboard] = useState(false);
+  const [showReview, setShowReview] = useState(false);
 
   // --- Current User State ---
   const [userState, setUserState] = useState<UserState>({
@@ -37,6 +40,13 @@ const App: React.FC = () => {
     currentBank: 'A'
   });
 
+  const [selectedCourseId, setSelectedCourseId] = useState<string>(ZEABUR_COURSE.id);
+  const [conceptProgress, setConceptProgress] = useState<{ currentLevel: number; levelStars: Record<number, number>; }>({
+    currentLevel: 1,
+    levelStars: {}
+  });
+  const [currentConceptLevel, setCurrentConceptLevel] = useState<ConceptLevel | null>(null);
+
   const [activeLevelId, setActiveLevelId] = useState<number | null>(null);
   const [currentLevelData, setCurrentLevelData] = useState<LevelData | null>(null);
   const [code, setCode] = useState('');
@@ -54,9 +64,36 @@ const App: React.FC = () => {
   const [tutorialStep, setTutorialStep] = useState<number>(-1);
   const [showVictory, setShowVictory] = useState(false);
   const [earnedStars, setEarnedStars] = useState(0);
+  const [conceptAnswer, setConceptAnswer] = useState<string | boolean | null>(null);
+  const [showConceptResult, setShowConceptResult] = useState(false);
+  const [conceptIsCorrect, setConceptIsCorrect] = useState<boolean | null>(null);
+  const [conceptAttempts, setConceptAttempts] = useState<number>(0); // 用于评星扣分
+  const [conceptHistory, setConceptHistory] = useState<{ levelId: number; question: string; correct: boolean; userAnswer: string | boolean | null; map?: string }[]>([]);
+  const [conceptSummary, setConceptSummary] = useState<{ map?: string; stars?: number; lastLevel?: number } | null>(null);
 
   const ui = UI_STRINGS[userState.language];
-  const levels = getLevels(userState.language, userState.currentBank);
+  const codeLevels = getLevels(userState.language, userState.currentBank);
+  const currentCourse = getCourseById(selectedCourseId) || PYTHON_CODE_COURSE;
+  const isConceptCourse = currentCourse.type === 'concept';
+  const isConceptSession = Boolean(isConceptCourse && currentConceptLevel && activeLevelId);
+  const isCodeSession = Boolean(!isConceptCourse && activeLevelId && currentLevelData);
+  const goToNextConceptLevel = () => {
+    if (!currentCourse || currentCourse.type !== 'concept' || !currentConceptLevel) return;
+    const levels = currentCourse.levels as ConceptLevel[];
+    const next = levels.find(l => l.id > currentConceptLevel.id);
+    if (next) {
+      setActiveLevelId(next.id);
+      setCurrentConceptLevel(next);
+      setConceptAnswer(null);
+      setConceptIsCorrect(null);
+      setShowConceptResult(false);
+      setShowVictory(false);
+      setConceptAttempts(0);
+      setConceptSummary(null);
+    } else {
+      handleNextLevel();
+    }
+  };
 
   // --- Initialization & Persistence ---
 
@@ -167,6 +204,12 @@ const App: React.FC = () => {
     audio.play('CLICK');
     setActiveLevelId(null);
     setCurrentLevelData(null);
+    setCurrentConceptLevel(null);
+    setConceptProgress({ currentLevel: 1, levelStars: {} });
+    setSelectedCourseId(PYTHON_CODE_COURSE.id);
+    setShowConceptResult(false);
+    setConceptAnswer(null);
+    setConceptIsCorrect(null);
     setShowUserSelect(true);
   };
 
@@ -178,20 +221,31 @@ const App: React.FC = () => {
   };
 
   const handleLevelSelect = (id: number) => {
-    const baseLevel = levels.find(l => l.id === id);
+    if (isConceptCourse && currentCourse.type === 'concept') {
+      const conceptLevel = (currentCourse.levels as ConceptLevel[]).find(l => l.id === id);
+      if (conceptLevel) {
+        setActiveLevelId(id);
+        setCurrentConceptLevel(conceptLevel);
+        setConceptAnswer(null);
+        setShowConceptResult(false);
+        setConceptIsCorrect(null);
+        setCurrentLevelData(null);
+      }
+      return;
+    }
+
+    const baseLevel = codeLevels.find(l => l.id === id);
     if (baseLevel) {
       let finalLevel = { ...baseLevel };
-      // RANDOMIZATION LOGIC: Pick a random variant if available
       if (baseLevel.variants && baseLevel.variants.length > 0) {
         const randomIndex = Math.floor(Math.random() * baseLevel.variants.length);
         const randomVariant = baseLevel.variants[randomIndex];
-        // Merge variant data into the active level data
         finalLevel = {
           ...finalLevel,
           task: randomVariant.task,
           starterCode: randomVariant.starterCode,
           hint: randomVariant.hint,
-          description: randomVariant.description || finalLevel.description // Optional override
+          description: randomVariant.description || finalLevel.description
         };
       }
       
@@ -205,6 +259,28 @@ const App: React.FC = () => {
     setUserState(prev => ({...prev, currentBank: bank}));
   };
 
+  const handleCourseSelect = (courseId: string) => {
+    setSelectedCourseId(courseId);
+    setActiveLevelId(null);
+    setCurrentLevelData(null);
+    setShowConceptResult(false);
+    setConceptAnswer(null);
+    setConceptIsCorrect(null);
+    setConceptAttempts(0);
+
+    if (courseId === ZEABUR_COURSE.id) {
+      const course = getCourseById(courseId);
+      if (course && course.type === 'concept') {
+        const levels = course.levels as ConceptLevel[];
+        const target = levels.find(l => l.id === conceptProgress.currentLevel) || levels[0];
+        setCurrentConceptLevel(target);
+        setActiveLevelId(target.id);
+      }
+    } else {
+      setCurrentConceptLevel(null);
+    }
+  };
+
   const handleTutorialNext = () => {
     audio.play('CLICK');
     if (tutorialStep >= 4) {
@@ -212,6 +288,73 @@ const App: React.FC = () => {
       setUserState(prev => ({ ...prev, hasSeenTutorial: true }));
     } else {
       setTutorialStep(prev => prev + 1);
+    }
+  };
+
+  const checkConceptAnswer = (question: ConceptQuestion, answer: string | boolean): boolean => {
+    switch (question.type) {
+      case 'single_choice':
+        return answer === question.correctAnswer;
+      case 'true_false':
+        return answer === question.correctAnswer;
+      case 'fill_blank': {
+        const normalized = String(answer).trim();
+        return question.correctAnswers.some(correct =>
+          question.caseSensitive ? correct === normalized : correct.toLowerCase() === normalized.toLowerCase()
+        );
+      }
+      default:
+        return false;
+    }
+  };
+
+  const handleConceptAnswer = (answer: string | boolean) => {
+    if (!currentConceptLevel) return;
+    const question = currentConceptLevel.questions[0];
+    const isCorrect = question ? checkConceptAnswer(question, answer) : false;
+
+    audio.play('CLICK');
+    setConceptAnswer(answer);
+    setConceptIsCorrect(isCorrect);
+    setShowConceptResult(true);
+    setConceptHistory(prev => [...prev, {
+      levelId: currentConceptLevel.id,
+      question: (question as any).question || (question as any).statement || '',
+      correct: isCorrect,
+      userAnswer: answer,
+      map: currentConceptLevel.map
+    }]);
+
+    if (isCorrect) {
+      audio.play('WIN');
+      const baseScore = 1000;
+      const totalScore = baseScore;
+      const newStars = conceptAttempts === 0 ? 3 : conceptAttempts === 1 ? 2 : 1;
+
+      setEarnedStars(newStars);
+      setScoreData({ score: totalScore, timeBonus: 0 });
+      setUserState(prev => ({ ...prev, xp: prev.xp + totalScore }));
+      setConceptAttempts(0);
+
+      setConceptProgress(prev => {
+        const currentStars = prev.levelStars[currentConceptLevel.id] || 0;
+        const updatedStars = Math.max(currentStars, newStars);
+        const canAdvance = currentConceptLevel.id === prev.currentLevel;
+        return {
+          currentLevel: canAdvance ? prev.currentLevel + 1 : prev.currentLevel,
+          levelStars: { ...prev.levelStars, [currentConceptLevel.id]: updatedStars }
+        };
+      });
+      // map 完成提示
+      const levels = (currentCourse?.levels || []) as ConceptLevel[];
+      const sameMapLevels = levels.filter(l => l.map === currentConceptLevel.map);
+      const lastInMap = sameMapLevels.length > 0 ? sameMapLevels[sameMapLevels.length - 1] : null;
+      if (lastInMap && lastInMap.id === currentConceptLevel.id) {
+        setConceptSummary({ map: currentConceptLevel.map, stars: newStars, lastLevel: currentConceptLevel.id });
+      }
+    } else {
+      audio.play('LOSE');
+      setConceptAttempts(prev => prev + 1);
     }
   };
 
@@ -280,17 +423,23 @@ const App: React.FC = () => {
     setMessages(prev => [...prev, newMsg]);
     setIsChatLoading(true);
 
+    const personaForChat: CoachPersona = isConceptSession ? 'mentor' : userState.settings.persona;
+
     const response = await sendChatMessage(
       messages, 
       text, 
       userState.language, 
-      userState.settings.persona,
+      personaForChat,
       {
         currentLevel: activeLevelId || 0,
-        levelTitle: currentLevelData?.title,
-        levelTask: currentLevelData?.task,
+        levelTitle: currentLevelData?.title || currentConceptLevel?.title,
+        levelTask: currentLevelData?.task || currentConceptLevel?.description,
         currentCode: code,
-        userXp: userState.xp
+        userXp: userState.xp,
+        // 注入概念题上下文
+        ...(isConceptSession && currentConceptLevel
+          ? { extra: JSON.stringify({ map: currentConceptLevel.map, difficulty: currentConceptLevel.difficulty, question: currentConceptLevel.questions?.[0] }) }
+          : {})
       }
     );
 
@@ -302,6 +451,19 @@ const App: React.FC = () => {
     setShowVictory(false);
     setActiveLevelId(null);
     setCurrentLevelData(null);
+    setCurrentConceptLevel(null);
+    setShowConceptResult(false);
+    setConceptAnswer(null);
+    setConceptIsCorrect(null);
+  };
+
+  const handleReplay = () => {
+    setShowVictory(false);
+    if (isConceptSession) {
+      setShowConceptResult(false);
+      setConceptAnswer(null);
+      setConceptIsCorrect(null);
+    }
   };
 
   const updateSettings = (voice: string, persona: CoachPersona) => {
@@ -329,9 +491,24 @@ const App: React.FC = () => {
           language={userState.language}
         />
       )}
+      {showReview && (
+        <ReviewModal
+          open={showReview}
+          onClose={() => setShowReview(false)}
+          course={currentCourse.type === 'concept' ? currentCourse : null}
+          conceptProgress={conceptProgress}
+          history={conceptHistory}
+          onGenerateSummary={async () => {
+            const mistakes = conceptHistory.filter(h => !h.correct).slice(-5).map(m => `#${m.levelId} ${m.question} | ans: ${m.userAnswer}`);
+            const prompt = `作为教练，基于这些错题和进度给出3条精炼建议，中文：\n${mistakes.join('\n') || '暂无错题'}`;
+            const resp = await sendChatMessage([], prompt, userState.language, 'mentor', { currentLevel: conceptProgress.currentLevel, currentCode: '', userXp: userState.xp });
+            return resp;
+          }}
+        />
+      )}
 
       {tutorialStep >= 0 && <TutorialOverlay step={tutorialStep} onNext={handleTutorialNext} language={userState.language} />}
-      {showVictory && <VictoryModal stars={earnedStars} score={scoreData.score} timeBonus={scoreData.timeBonus} onNext={handleNextLevel} onReplay={() => setShowVictory(false)} language={userState.language} />}
+      {showVictory && <VictoryModal stars={earnedStars} score={scoreData.score} timeBonus={scoreData.timeBonus} onNext={handleNextLevel} onReplay={handleReplay} language={userState.language} />}
 
       {/* Header */}
       <header className="h-16 bg-slate-900 border-b border-slate-800 flex items-center justify-between px-6 shrink-0 z-40 shadow-md">
@@ -345,7 +522,7 @@ const App: React.FC = () => {
         </div>
 
         {/* Timer (Center) */}
-        {activeLevelId && (
+        {isCodeSession && (
           <div className={`absolute left-1/2 transform -translate-x-1/2 flex items-center gap-2 px-4 py-2 rounded-xl border-2 transition-all ${timeLeft < 10 ? 'bg-red-900/50 border-red-500 animate-pulse' : 'bg-slate-800 border-slate-700'}`}>
             <Timer size={20} className={timeLeft < 10 ? 'text-red-400' : 'text-slate-400'} />
             <span className={`font-mono text-xl font-black ${timeLeft < 10 ? 'text-red-400' : 'text-white'}`}>
@@ -368,6 +545,14 @@ const App: React.FC = () => {
             <span className="text-blue-100">{userState.xp}</span>
           </div>
 
+          <button
+            onClick={() => setShowReview(true)}
+            className="flex items-center space-x-2 px-4 py-2 bg-slate-800 hover:bg-slate-700 rounded-full text-xs font-bold transition-all border border-slate-700"
+          >
+            <BarChart3 size={16} />
+            <span>复盘</span>
+          </button>
+
           <button onClick={toggleLanguage} className="flex items-center space-x-2 px-4 py-2 bg-slate-800 hover:bg-slate-700 rounded-full text-xs font-bold transition-all border border-slate-700">
             <Languages size={16} />
             <span>{userState.language === 'en' ? '中' : 'EN'}</span>
@@ -376,15 +561,99 @@ const App: React.FC = () => {
       </header>
 
       {/* Main Layout */}
-      <main className="flex-1 h-[calc(100vh-4rem)] overflow-hidden relative p-3">
+      <main className="flex-1 h-[calc(100vh-4rem)] overflow-auto relative p-3">
         {!activeLevelId ? (
           <LevelMap 
             userState={userState} 
+            selectedCourseId={selectedCourseId}
+            conceptProgress={conceptProgress}
+            onSelectCourse={handleCourseSelect}
             onSelectLevel={handleLevelSelect} 
             onSelectBank={handleBankSelect} 
             onSwitchUser={handleSwitchUser} 
             onShowLeaderboard={() => setShowLeaderboard(true)}
           />
+        ) : isConceptSession && currentConceptLevel ? (
+          <div className="flex flex-col md:flex-row h-full gap-4">
+            <div className="flex flex-col flex-[2] gap-4 min-w-0">
+              {showConceptResult && conceptIsCorrect && (
+                <div className="bg-green-900/40 border border-green-700 text-green-100 rounded-xl p-3 font-bold flex items-center gap-3">
+                  🎉 回答正确！可继续下一关或查看提示。
+                  <div className="flex gap-1">
+                    {[1, 2, 3].map(s => (
+                      <Star key={s} size={18} className="text-yellow-400 fill-yellow-400 drop-shadow" />
+                    ))}
+                  </div>
+                </div>
+              )}
+                <div className="bg-gradient-to-r from-indigo-900/80 to-blue-900/80 p-5 rounded-2xl border border-indigo-500/30 shadow-lg">
+                  <div className="flex items-center gap-3 mb-2">
+                    <span className="bg-blue-500 text-white text-[10px] font-bold px-2 py-0.5 rounded shadow-sm shrink-0">
+                      概念关卡 #{currentConceptLevel.id}
+                    </span>
+                    <h2 className="font-bold text-lg text-white tracking-wide truncate">{currentConceptLevel.title}</h2>
+                </div>
+                <p className="text-sm text-slate-200 leading-snug opacity-90">{currentConceptLevel.description}</p>
+              </div>
+              <div className="flex-1 min-h-0 overflow-y-auto p-4 bg-slate-900/40 rounded-2xl border border-slate-800 custom-scrollbar">
+                <QuestionRenderer 
+                  question={currentConceptLevel.questions[0]} 
+                  onAnswer={handleConceptAnswer} 
+                  showResult={showConceptResult}
+                  userAnswer={conceptAnswer ?? undefined}
+                  isCorrect={conceptIsCorrect ?? undefined}
+                  disabled={showConceptResult}
+                />
+              </div>
+              {showConceptResult && conceptIsCorrect && (
+                <div className="bg-green-900/40 border border-green-700 text-green-100 rounded-xl p-3 font-bold">
+                  ⭐ 评级：3 星
+                </div>
+              )}
+              <div className="flex gap-3">
+                <button
+                  onClick={() => {
+                    setShowConceptResult(false);
+                    setConceptAnswer(null);
+                    setConceptIsCorrect(null);
+                    setShowVictory(false);
+                  }}
+                  className="flex-1 py-3 rounded-xl font-bold bg-slate-800 hover:bg-slate-700 border border-slate-700 transition-colors"
+                >
+                  {ui.resetBtn}
+                </button>
+                <button
+                  onClick={goToNextConceptLevel}
+                  disabled={!conceptIsCorrect}
+                  className={`flex-1 py-3 rounded-xl font-bold border transition-colors shadow-lg ${
+                    conceptIsCorrect
+                      ? 'bg-yellow-500 hover:bg-yellow-400 border-yellow-400 text-slate-900'
+                      : 'bg-slate-700 text-slate-300 border-slate-700 cursor-not-allowed'
+                  }`}
+                >
+                  下一关
+                </button>
+                <button
+                  onClick={handleNextLevel}
+                  className="flex-1 py-3 rounded-xl font-bold bg-blue-600 hover:bg-blue-500 border border-blue-500/60 transition-colors shadow-lg shadow-blue-900/30"
+                >
+                  {ui.backToMap}
+                </button>
+              </div>
+            </div>
+
+            <div className="flex-1 min-w-[320px] max-w-md shrink-0 rounded-2xl overflow-hidden shadow-2xl ring-1 ring-white/10 bg-slate-900/60 border border-slate-800">
+              <CoachChat 
+                messages={messages} 
+                onSendMessage={handleSendMessage} 
+                isLoading={isChatLoading} 
+                language={userState.language}
+                voice={userState.settings.voiceURI} 
+                persona={userState.settings.persona} 
+                onUpdateSettings={updateSettings}
+              />
+            </div>
+          </div>
         ) : (
           <div className="flex flex-col md:flex-row h-full gap-4">
             

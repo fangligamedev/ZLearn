@@ -7,7 +7,7 @@ export enum MessageRole {
 
 export type Language = 'en' | 'zh';
 
-export type CoachPersona = 'gentle' | 'sarcastic' | 'professional' | 'concise' | 'stepbystep';
+export type CoachPersona = 'gentle' | 'sarcastic' | 'professional' | 'concise' | 'stepbystep' | 'mentor';
 
 export interface ChatMessage {
   role: MessageRole;
@@ -58,6 +58,7 @@ export interface AIContext {
   levelTask?: string;
   currentCode: string;
   userXp: number;
+  extra?: string;
 }
 
 export interface ValidationResult {
@@ -65,4 +66,62 @@ export interface ValidationResult {
   output: string;
   feedback: string;
   starsEarned?: number;
+}
+
+// ---------- 概念题类型 ----------
+
+/** 单选题 */
+export interface SingleChoiceQuestion {
+  type: 'single_choice';
+  question: string;
+  options: { key: string; text: string }[];
+  correctAnswer: string;
+  explanation: string;
+  hint?: string;
+}
+
+/** 判断题 */
+export interface TrueFalseQuestion {
+  type: 'true_false';
+  statement: string;
+  correctAnswer: boolean;
+  explanation: string;
+}
+
+/** 填空题 */
+export interface FillBlankQuestion {
+  type: 'fill_blank';
+  question: string;
+  correctAnswers: string[];
+  caseSensitive?: boolean;
+  explanation: string;
+}
+
+/** 概念题联合类型 */
+export type ConceptQuestion =
+  | SingleChoiceQuestion
+  | TrueFalseQuestion
+  | FillBlankQuestion;
+
+// ---------- 课程结构 ----------
+
+/** 概念关卡 */
+export interface ConceptLevel {
+  id: number;
+  title: string;
+  description: string;
+  type: 'concept';
+  difficulty?: 'easy' | 'medium' | 'hard' | 'expert';
+  map?: string; // 分组/地图名
+  questions: ConceptQuestion[];
+}
+
+/** 课程定义 */
+export interface Course {
+  id: string;
+  name: string;
+  icon: string;
+  description?: string;
+  type: 'code' | 'concept';
+  levels: ConceptLevel[] | LevelData[];
 }

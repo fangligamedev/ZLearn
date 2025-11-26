@@ -3,7 +3,7 @@ import { GoogleGenerativeAI } from "@google/generative-ai";
 import { MessageRole, ValidationResult, ChatMessage, Language, AIContext, CoachPersona } from '../types';
 import { COACH_PERSONAS } from '../constants';
 
-const apiKey = process.env.API_KEY || ''; 
+const apiKey = process.env.API_KEY || process.env.GEMINI_API_KEY || '';
 const MODEL_NAME = 'gemini-2.5-flash';
 
 // Zeabur AI Hub configuration
@@ -96,7 +96,7 @@ export const sendChatMessage = async (
     const model = genAI.getGenerativeModel(modelParams, requestOptions);
     
     // Inject Persona Instruction
-    const personaInstruction = COACH_PERSONAS[persona] || COACH_PERSONAS['gentle'];
+    const personaInstruction = COACH_PERSONAS[persona] || COACH_PERSONAS['mentor'] || COACH_PERSONAS['gentle'];
 
     let systemInstruction = `
     You are Sparky. 
@@ -115,6 +115,12 @@ export const sendChatMessage = async (
       ${context.currentCode}
       \`\`\`
       `;
+      if (context.extra) {
+        systemInstruction += `
+        Additional Context (JSON):
+        ${context.extra}
+        `;
+      }
     }
 
     // Fallback strategy: Treat chat as a single completion request if startChat fails or for better compatibility

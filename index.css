@@ -1,0 +1,10 @@
+/* Base styles fallback to avoid 404 and ensure minimal layout if CDN unavailable */
+html, body, #root {
+  height: 100%;
+  margin: 0;
+}
+body {
+  background-color: #0f172a;
+  color: #e2e8f0;
+  font-family: 'Fredoka', 'Inter', system-ui, -apple-system, sans-serif;
+}

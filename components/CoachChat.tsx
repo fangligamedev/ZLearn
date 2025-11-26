@@ -48,19 +48,21 @@ const CoachChat: React.FC<CoachChatProps> = ({
       const lastMsg = messages[messages.length - 1];
       if (lastMsg.role === MessageRole.MODEL) speak(lastMsg.text);
     }
-  }, [messages, isMuted]);
+  }, [messages, isMuted, availableVoices, language, voice]);
 
   const speak = (text: string) => {
-    window.speechSynthesis.cancel();
+    const voices = availableVoices.length > 0 ? availableVoices : window.speechSynthesis.getVoices();
     const utterance = new SpeechSynthesisUtterance(text);
     utterance.lang = language === 'zh' ? 'zh-CN' : 'en-US';
-    utterance.pitch = 1.1; 
-    
+    utterance.pitch = 1.0;
+    utterance.rate = 1.0;
     if (voice) {
-      const selectedVoice = availableVoices.find(v => v.voiceURI === voice);
+      const selectedVoice = voices.find(v => v.voiceURI === voice);
       if (selectedVoice) utterance.voice = selectedVoice;
+    } else if (voices.length > 0) {
+      utterance.voice = voices[0];
     }
-    
+    window.speechSynthesis.cancel();
     window.speechSynthesis.speak(utterance);
   };
 

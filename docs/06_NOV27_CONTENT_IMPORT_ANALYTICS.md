@@ -18,7 +18,8 @@
 
 ### 🎯 今日开发目标
 1. **内容导入与课程生成** - 用户可导入 PDF/MD/网页生成自定义课程
-2. **数据持久化与分析** - 游戏化埋点 + 留存分析 + Zeabur 数据备份
+2. **游戏化配置系统** - 关卡/课程参数通过 JSON 配置文件暴露，可灵活调整
+3. **数据持久化与分析** - 游戏化埋点 + 留存分析 + Zeabur 数据备份
 
 ---
 
@@ -36,6 +37,13 @@
 │  Step A.3: 课程创建向导 UI                                          │
 │  Step A.4: 动态课程管理                                             │
 │                                                                     │
+│  PHASE C: 游戏化配置系统                            Est: 2-3 hours  │
+│  ─────────────────────────────────────                             │
+│  Step C.1: 课程/关卡配置文件设计                                    │
+│  Step C.2: 配置服务 (configService)                                 │
+│  Step C.3: 配置热加载与运行时覆盖                                   │
+│  Step C.4: 配置编辑器 UI (可选)                                     │
+│                                                                     │
 │  PHASE B: 数据持久化与分析                          Est: 3-4 hours  │
 │  ─────────────────────────────────────                             │
 │  Step B.1: IndexedDB 存储服务                                       │
@@ -43,7 +51,7 @@
 │  Step B.3: 留存/学习分析引擎                                         │
 │  Step B.4: Zeabur 数据备份方案                                      │
 │                                                                     │
-│                                          Total Est: 6-8 hours      │
+│                                          Total Est: 8-11 hours     │
 └─────────────────────────────────────────────────────────────────────┘
 ```
 
@@ -823,6 +831,760 @@ const deleteCustomCourse = (courseId: string) => {
 
 ---
 
+# PHASE C: 游戏化配置系统
+
+> **设计原则**: 像游戏开发一样，所有关卡参数都通过配置文件暴露，实现"数据驱动"的关卡设计。
+
+## C.1 架构设计
+
+```
+┌─────────────────────────────────────────────────────────────────────┐
+│                   CONFIGURATION SYSTEM ARCHITECTURE                  │
+├─────────────────────────────────────────────────────────────────────┤
+│                                                                     │
+│   配置文件层                                                         │
+│   ┌─────────────────────────────────────────────────────────────┐  │
+│   │  📁 /config/                                                 │  │
+│   │  ├── game.config.json        # 全局游戏机制                   │  │
+│   │  ├── courses/                # 课程配置目录                   │  │
+│   │  │   ├── python.course.json  # Python 课程定义               │  │
+│   │  │   ├── zeabur.course.json  # Zeabur 课程定义               │  │
+│   │  │   └── custom/             # 用户自定义课程                 │  │
+│   │  ├── ai.config.json          # AI 服务配置                   │  │
+│   │  └── audio.config.json       # 音效配置                       │  │
+│   └─────────────────────────────────────────────────────────────┘  │
+│                               │                                     │
+│                               ▼                                     │
+│   ┌─────────────────────────────────────────────────────────────┐  │
+│   │  🔧 ConfigService                                            │  │
+│   │  • loadConfig(): 加载所有配置文件                             │  │
+│   │  • get(path): 获取配置项 (支持点号路径)                       │  │
+│   │  • override(path, value): 运行时覆盖                          │  │
+│   │  • reset(): 重置为默认值                                      │  │
+│   │  • watch(path, callback): 监听配置变化                        │  │
+│   └───────────────────────────┬─────────────────────────────────┘  │
+│                               │                                     │
+│                               ▼                                     │
+│   ┌─────────────────────────────────────────────────────────────┐  │
+│   │  🎮 游戏运行时                                               │  │
+│   │  • 关卡难度参数动态读取                                       │  │
+│   │  • 评分规则可配置                                             │  │
+│   │  • AI 行为可调整                                              │  │
+│   │  • 用户可通过 localStorage 覆盖                               │  │
+│   └─────────────────────────────────────────────────────────────┘  │
+│                                                                     │
+└─────────────────────────────────────────────────────────────────────┘
+```
+
+---
+
+## Step C.1: 课程/关卡配置文件设计
+
+### 📐 Spec
+
+#### 全局游戏配置 (game.config.json)
+
+```json
+{
+  "$schema": "./schemas/game.schema.json",
+  "version": "2.0.0",
+  
+  "scoring": {
+    "baseScore": 1000,
+    "timeBonusMultiplier": 20,
+    "starRules": {
+      "firstAttempt": 3,
+      "secondAttempt": 2,
+      "thirdOrMore": 1
+    },
+    "xpRewards": {
+      "level1Star": 500,
+      "level2Star": 750,
+      "level3Star": 1000,
+      "mapComplete": 500,
+      "courseComplete": 2000
+    }
+  },
+  
+  "difficulty": {
+    "easy": {
+      "timeLimit": 0,
+      "hintsAllowed": 3,
+      "penaltyPerWrong": 0,
+      "showExplanation": true
+    },
+    "medium": {
+      "timeLimit": 60,
+      "hintsAllowed": 2,
+      "penaltyPerWrong": 100,
+      "showExplanation": true
+    },
+    "hard": {
+      "timeLimit": 45,
+      "hintsAllowed": 1,
+      "penaltyPerWrong": 200,
+      "showExplanation": false
+    }
+  },
+  
+  "progression": {
+    "unlockMode": "sequential",
+    "requireStarsToUnlock": 0,
+    "allowReplay": true,
+    "autoAdvance": true,
+    "autoAdvanceDelay": 1500
+  },
+  
+  "coach": {
+    "defaultPersona": "professional",
+    "defaultVoice": "zh-CN-XiaoxiaoNeural",
+    "autoReadQuestion": true,
+    "showHintAfterWrong": 2
+  },
+  
+  "review": {
+    "showAfterLevel": true,
+    "showAfterMap": true,
+    "aiSummaryEnabled": true
+  }
+}
+```
+
+#### 课程配置 (zeabur.course.json) - 完整示例
+
+```json
+{
+  "$schema": "../schemas/course.schema.json",
+  "id": "zeabur",
+  "version": "1.0.0",
+  
+  "metadata": {
+    "name": "Zeabur 云平台速成",
+    "icon": "☁️",
+    "description": "快速掌握 Zeabur 部署平台核心概念",
+    "author": "Lalalearn Team",
+    "tags": ["云计算", "部署", "DevOps"],
+    "difficulty": "beginner",
+    "estimatedTime": "30分钟",
+    "targetAudience": ["市场人员", "销售人员", "新员工"]
+  },
+  
+  "settings": {
+    "type": "concept",
+    "questionModes": ["single_choice", "true_false", "fill_blank"],
+    "difficultyProgression": "progressive",
+    "shuffleQuestions": false,
+    "allowSkip": false
+  },
+  
+  "maps": [
+    {
+      "id": 0,
+      "title": "🚀 平台入门",
+      "description": "了解 Zeabur 是什么",
+      "unlockCondition": null,
+      "bonusXP": 500
+    },
+    {
+      "id": 1,
+      "title": "⚡ 核心功能",
+      "description": "掌握一键部署等核心能力",
+      "unlockCondition": { "mapId": 0, "minStars": 5 },
+      "bonusXP": 600
+    }
+  ],
+  
+  "levels": [
+    {
+      "id": 1,
+      "mapIndex": 0,
+      "title": "什么是 Zeabur？",
+      "description": "认识 Zeabur 平台定位",
+      "difficulty": "easy",
+      
+      "config": {
+        "timeLimit": 0,
+        "maxAttempts": 0,
+        "showHints": true,
+        "hintCost": 0,
+        "xpBase": 100,
+        "xpBonus": {
+          "noHint": 20,
+          "fastComplete": 30,
+          "firstTry": 50
+        }
+      },
+      
+      "question": {
+        "type": "single_choice",
+        "question": "Zeabur 是一个什么类型的平台？",
+        "options": [
+          { "key": "A", "text": "社交媒体平台" },
+          { "key": "B", "text": "云端应用部署平台" },
+          { "key": "C", "text": "在线文档编辑器" },
+          { "key": "D", "text": "电商购物平台" }
+        ],
+        "correctAnswer": "B",
+        "explanation": "Zeabur 是一个现代化的云端应用部署平台，让开发者可以轻松部署各种应用。",
+        "hints": [
+          "想想 Zeabur 主要帮助开发者做什么",
+          "它跟服务器部署有关"
+        ]
+      },
+      
+      "coaching": {
+        "introMessage": "让我们先来认识一下 Zeabur 是什么吧！",
+        "successMessage": "没错！Zeabur 就是帮你一键部署应用的平台！",
+        "failMessage": "再想想，Zeabur 是帮助开发者部署应用的...",
+        "contextTags": ["platform", "introduction"]
+      }
+    },
+    {
+      "id": 2,
+      "mapIndex": 0,
+      "title": "核心优势",
+      "description": "了解 Zeabur 的关键特点",
+      "difficulty": "easy",
+      
+      "config": {
+        "timeLimit": 0,
+        "maxAttempts": 0,
+        "showHints": true
+      },
+      
+      "question": {
+        "type": "true_false",
+        "statement": "Zeabur 需要用户手动配置 CI/CD 流水线才能部署应用。",
+        "correctAnswer": false,
+        "explanation": "Zeabur 最大的优势就是开箱即用的 CI/CD，无需手动配置即可自动构建部署。"
+      }
+    }
+  ]
+}
+```
+
+#### 关卡配置类型定义
+
+```typescript
+// ============================================================
+// 文件: src/types/config.ts
+// ============================================================
+
+/** 关卡配置 */
+export interface LevelConfig {
+  timeLimit: number;           // 时间限制 (秒), 0=无限制
+  maxAttempts: number;         // 最大尝试次数, 0=无限制
+  showHints: boolean;          // 是否显示提示
+  hintCost: number;            // 每次提示扣分
+  xpBase: number;              // 基础经验值
+  xpBonus: {
+    noHint: number;            // 不用提示奖励
+    fastComplete: number;      // 快速完成奖励
+    firstTry: number;          // 一次通过奖励
+  };
+}
+
+/** 教练配置 */
+export interface CoachingConfig {
+  introMessage?: string;       // 关卡开始消息
+  successMessage?: string;     // 成功消息
+  failMessage?: string;        // 失败消息
+  contextTags?: string[];      // 上下文标签
+}
+
+/** 完整关卡定义 */
+export interface LevelDefinition {
+  id: number;
+  mapIndex: number;
+  title: string;
+  description: string;
+  difficulty: 'easy' | 'medium' | 'hard';
+  config: LevelConfig;
+  question: QuestionDefinition;
+  coaching?: CoachingConfig;
+}
+
+/** 课程元数据 */
+export interface CourseMetadata {
+  name: string;
+  icon: string;
+  description: string;
+  author: string;
+  tags: string[];
+  difficulty: 'beginner' | 'intermediate' | 'advanced';
+  estimatedTime: string;
+  targetAudience: string[];
+}
+
+/** 完整课程配置 */
+export interface CourseConfig {
+  id: string;
+  version: string;
+  metadata: CourseMetadata;
+  settings: CourseSettings;
+  maps: MapDefinition[];
+  levels: LevelDefinition[];
+}
+```
+
+### 📤 Output
+- `src/types/config.ts`
+- `config/game.config.json`
+- `config/courses/zeabur.course.json`
+
+---
+
+## Step C.2: 配置服务 (configService)
+
+### 📐 Spec
+
+```typescript
+// ============================================================
+// 文件: src/services/configService.ts
+// ============================================================
+
+import type { CourseConfig, LevelConfig } from '../types/config';
+
+// 静态导入默认配置
+import defaultGameConfig from '../config/game.config.json';
+import zeaburCourse from '../config/courses/zeabur.course.json';
+import pythonCourse from '../config/courses/python.course.json';
+
+export interface GameConfig {
+  scoring: {
+    baseScore: number;
+    timeBonusMultiplier: number;
+    starRules: { firstAttempt: number; secondAttempt: number; thirdOrMore: number };
+    xpRewards: Record<string, number>;
+  };
+  difficulty: Record<string, {
+    timeLimit: number;
+    hintsAllowed: number;
+    penaltyPerWrong: number;
+    showExplanation: boolean;
+  }>;
+  progression: {
+    unlockMode: 'sequential' | 'free' | 'stars';
+    requireStarsToUnlock: number;
+    allowReplay: boolean;
+    autoAdvance: boolean;
+    autoAdvanceDelay: number;
+  };
+  coach: {
+    defaultPersona: string;
+    defaultVoice: string;
+    autoReadQuestion: boolean;
+    showHintAfterWrong: number;
+  };
+  review: {
+    showAfterLevel: boolean;
+    showAfterMap: boolean;
+    aiSummaryEnabled: boolean;
+  };
+}
+
+class ConfigService {
+  private gameConfig: GameConfig;
+  private courses: Map<string, CourseConfig> = new Map();
+  private overrides: Record<string, any> = {};
+  private listeners: Map<string, Set<(value: any) => void>> = new Map();
+
+  constructor() {
+    // 加载默认配置
+    this.gameConfig = defaultGameConfig as GameConfig;
+    
+    // 加载内置课程
+    this.courses.set('zeabur', zeaburCourse as CourseConfig);
+    this.courses.set('python', pythonCourse as CourseConfig);
+    
+    // 从 localStorage 恢复用户覆盖
+    this.loadOverrides();
+  }
+
+  // === 游戏配置访问 ===
+  
+  /**
+   * 获取配置值 (支持点号路径)
+   * @example config.get('scoring.baseScore') => 1000
+   */
+  get<T = any>(path: string): T {
+    // 先检查覆盖值
+    if (path in this.overrides) {
+      return this.overrides[path] as T;
+    }
+    
+    // 从配置中读取
+    const keys = path.split('.');
+    let value: any = this.gameConfig;
+    
+    for (const key of keys) {
+      if (value && typeof value === 'object' && key in value) {
+        value = value[key];
+      } else {
+        return undefined as T;
+      }
+    }
+    
+    return value as T;
+  }
+
+  /**
+   * 运行时覆盖配置 (保存到 localStorage)
+   */
+  override(path: string, value: any): void {
+    this.overrides[path] = value;
+    this.saveOverrides();
+    this.notifyListeners(path, value);
+  }
+
+  /**
+   * 重置指定配置项
+   */
+  reset(path?: string): void {
+    if (path) {
+      delete this.overrides[path];
+    } else {
+      this.overrides = {};
+    }
+    this.saveOverrides();
+  }
+
+  /**
+   * 监听配置变化
+   */
+  watch(path: string, callback: (value: any) => void): () => void {
+    if (!this.listeners.has(path)) {
+      this.listeners.set(path, new Set());
+    }
+    this.listeners.get(path)!.add(callback);
+    
+    // 返回取消监听函数
+    return () => {
+      this.listeners.get(path)?.delete(callback);
+    };
+  }
+
+  // === 课程配置访问 ===
+
+  /**
+   * 获取课程配置
+   */
+  getCourse(courseId: string): CourseConfig | undefined {
+    return this.courses.get(courseId);
+  }
+
+  /**
+   * 获取所有课程
+   */
+  getAllCourses(): CourseConfig[] {
+    return Array.from(this.courses.values());
+  }
+
+  /**
+   * 注册自定义课程
+   */
+  registerCourse(course: CourseConfig): void {
+    this.courses.set(course.id, course);
+  }
+
+  /**
+   * 获取关卡配置 (合并全局默认值)
+   */
+  getLevelConfig(courseId: string, levelId: number): LevelConfig {
+    const course = this.courses.get(courseId);
+    const level = course?.levels.find(l => l.id === levelId);
+    const difficulty = level?.difficulty || 'easy';
+    
+    // 合并: 全局默认 -> 难度默认 -> 关卡自定义
+    const globalDefaults = this.get<GameConfig['difficulty'][string]>(`difficulty.${difficulty}`);
+    const levelConfig = level?.config || {};
+    
+    return {
+      timeLimit: levelConfig.timeLimit ?? globalDefaults?.timeLimit ?? 0,
+      maxAttempts: levelConfig.maxAttempts ?? 0,
+      showHints: levelConfig.showHints ?? true,
+      hintCost: levelConfig.hintCost ?? 0,
+      xpBase: levelConfig.xpBase ?? 100,
+      xpBonus: levelConfig.xpBonus ?? { noHint: 20, fastComplete: 30, firstTry: 50 }
+    };
+  }
+
+  // === 私有方法 ===
+
+  private loadOverrides(): void {
+    try {
+      const saved = localStorage.getItem('lalalearn_config_overrides');
+      if (saved) {
+        this.overrides = JSON.parse(saved);
+      }
+    } catch (e) {
+      console.warn('Failed to load config overrides:', e);
+    }
+  }
+
+  private saveOverrides(): void {
+    localStorage.setItem('lalalearn_config_overrides', JSON.stringify(this.overrides));
+  }
+
+  private notifyListeners(path: string, value: any): void {
+    this.listeners.get(path)?.forEach(cb => cb(value));
+  }
+}
+
+export const configService = new ConfigService();
+
+// React Hook
+export function useConfig<T = any>(path: string): T {
+  const [value, setValue] = React.useState<T>(() => configService.get<T>(path));
+  
+  React.useEffect(() => {
+    return configService.watch(path, setValue);
+  }, [path]);
+  
+  return value;
+}
+```
+
+### 📤 Output
+- `src/services/configService.ts`
+
+---
+
+## Step C.3: 配置热加载与运行时覆盖
+
+### 📐 Spec
+
+在 `App.tsx` 中集成配置服务：
+
+```typescript
+// 在 App.tsx 中使用配置
+import { configService, useConfig } from './services/configService';
+
+function App() {
+  // 使用 Hook 读取配置
+  const autoAdvance = useConfig<boolean>('progression.autoAdvance');
+  const autoAdvanceDelay = useConfig<number>('progression.autoAdvanceDelay');
+  
+  // 或直接调用
+  const starRules = configService.get('scoring.starRules');
+  
+  // 根据配置计算星星
+  const calculateStars = (attempts: number): number => {
+    if (attempts === 1) return starRules.firstAttempt;
+    if (attempts === 2) return starRules.secondAttempt;
+    return starRules.thirdOrMore;
+  };
+  
+  // 获取关卡配置
+  const levelConfig = configService.getLevelConfig('zeabur', currentLevel);
+  
+  // ...
+}
+```
+
+### 配置迁移: 将现有硬编码改为配置
+
+```typescript
+// 之前 (硬编码)
+const getStars = (attempts: number) => {
+  if (attempts <= 1) return 3;
+  if (attempts === 2) return 2;
+  return 1;
+};
+
+// 之后 (配置驱动)
+const getStars = (attempts: number) => {
+  const rules = configService.get('scoring.starRules');
+  if (attempts <= 1) return rules.firstAttempt;
+  if (attempts === 2) return rules.secondAttempt;
+  return rules.thirdOrMore;
+};
+```
+
+---
+
+## Step C.4: 配置编辑器 UI (可选)
+
+### 📐 Spec
+
+```typescript
+// ============================================================
+// 文件: src/components/settings/ConfigEditor.tsx
+// ============================================================
+
+import React, { useState } from 'react';
+import { configService, GameConfig } from '../../services/configService';
+
+interface ConfigEditorProps {
+  onClose: () => void;
+}
+
+const ConfigEditor: React.FC<ConfigEditorProps> = ({ onClose }) => {
+  // 可编辑的配置项
+  const [starRules, setStarRules] = useState({
+    firstAttempt: configService.get<number>('scoring.starRules.firstAttempt'),
+    secondAttempt: configService.get<number>('scoring.starRules.secondAttempt'),
+    thirdOrMore: configService.get<number>('scoring.starRules.thirdOrMore')
+  });
+  
+  const [autoAdvance, setAutoAdvance] = useState(
+    configService.get<boolean>('progression.autoAdvance')
+  );
+  
+  const [autoReadQuestion, setAutoReadQuestion] = useState(
+    configService.get<boolean>('coach.autoReadQuestion')
+  );
+
+  const handleSave = () => {
+    configService.override('scoring.starRules.firstAttempt', starRules.firstAttempt);
+    configService.override('scoring.starRules.secondAttempt', starRules.secondAttempt);
+    configService.override('scoring.starRules.thirdOrMore', starRules.thirdOrMore);
+    configService.override('progression.autoAdvance', autoAdvance);
+    configService.override('coach.autoReadQuestion', autoReadQuestion);
+    onClose();
+  };
+
+  const handleReset = () => {
+    configService.reset();
+    window.location.reload();
+  };
+
+  return (
+    <div className="fixed inset-0 bg-black/80 flex items-center justify-center z-50 p-4">
+      <div className="bg-slate-800 rounded-2xl w-full max-w-lg">
+        <div className="p-6 border-b border-slate-700">
+          <h2 className="text-xl font-bold">⚙️ 游戏配置</h2>
+          <p className="text-sm text-slate-400 mt-1">调整游戏参数 (修改后立即生效)</p>
+        </div>
+
+        <div className="p-6 space-y-6">
+          {/* 星星规则 */}
+          <div>
+            <h3 className="font-medium mb-3">⭐ 星星评分规则</h3>
+            <div className="grid grid-cols-3 gap-4">
+              <div>
+                <label className="text-sm text-slate-400">首次通过</label>
+                <input
+                  type="number"
+                  min={1}
+                  max={3}
+                  value={starRules.firstAttempt}
+                  onChange={(e) => setStarRules({ ...starRules, firstAttempt: Number(e.target.value) })}
+                  className="w-full mt-1 p-2 bg-slate-700 rounded-lg"
+                />
+              </div>
+              <div>
+                <label className="text-sm text-slate-400">第二次通过</label>
+                <input
+                  type="number"
+                  min={1}
+                  max={3}
+                  value={starRules.secondAttempt}
+                  onChange={(e) => setStarRules({ ...starRules, secondAttempt: Number(e.target.value) })}
+                  className="w-full mt-1 p-2 bg-slate-700 rounded-lg"
+                />
+              </div>
+              <div>
+                <label className="text-sm text-slate-400">三次及以上</label>
+                <input
+                  type="number"
+                  min={1}
+                  max={3}
+                  value={starRules.thirdOrMore}
+                  onChange={(e) => setStarRules({ ...starRules, thirdOrMore: Number(e.target.value) })}
+                  className="w-full mt-1 p-2 bg-slate-700 rounded-lg"
+                />
+              </div>
+            </div>
+          </div>
+
+          {/* 自动功能 */}
+          <div className="space-y-3">
+            <h3 className="font-medium">🔄 自动功能</h3>
+            <label className="flex items-center gap-3 cursor-pointer">
+              <input
+                type="checkbox"
+                checked={autoAdvance}
+                onChange={(e) => setAutoAdvance(e.target.checked)}
+                className="w-5 h-5 rounded"
+              />
+              <span>答对后自动进入下一关</span>
+            </label>
+            <label className="flex items-center gap-3 cursor-pointer">
+              <input
+                type="checkbox"
+                checked={autoReadQuestion}
+                onChange={(e) => setAutoReadQuestion(e.target.checked)}
+                className="w-5 h-5 rounded"
+              />
+              <span>自动朗读题目</span>
+            </label>
+          </div>
+        </div>
+
+        <div className="p-6 border-t border-slate-700 flex gap-3">
+          <button
+            onClick={handleReset}
+            className="px-4 py-2 bg-red-600/20 text-red-400 hover:bg-red-600/30 rounded-lg"
+          >
+            重置默认
+          </button>
+          <div className="flex-1" />
+          <button
+            onClick={onClose}
+            className="px-4 py-2 bg-slate-700 hover:bg-slate-600 rounded-lg"
+          >
+            取消
+          </button>
+          <button
+            onClick={handleSave}
+            className="px-4 py-2 bg-blue-600 hover:bg-blue-500 rounded-lg"
+          >
+            保存
+          </button>
+        </div>
+      </div>
+    </div>
+  );
+};
+
+export default ConfigEditor;
+```
+
+### 📤 Output
+- `src/components/settings/ConfigEditor.tsx`
+
+---
+
+## C.5 课程配置与 constants.ts 迁移
+
+### 迁移计划
+
+将现有 `constants.ts` 中的课程数据迁移到 JSON 配置文件：
+
+```typescript
+// 之前 (constants.ts)
+export const ZEABUR_COURSE = {
+  id: 'zeabur',
+  name: 'Zeabur 云平台速成',
+  // ...100 个关卡硬编码
+};
+
+// 之后 (config/courses/zeabur.course.json)
+// 全部关卡数据移到 JSON 文件
+// constants.ts 只保留纯静态常量 (如音效 URL)
+```
+
+### 迁移步骤
+
+1. 创建 `config/courses/` 目录
+2. 将 `ZEABUR_COURSE` 导出为 `zeabur.course.json`
+3. 将 `PYTHON_LEVELS` 导出为 `python.course.json`
+4. 更新 `configService` 加载这些文件
+5. 修改 `App.tsx` 和 `LevelMap.tsx` 使用 `configService.getCourse()`
+
+---
+
 # PHASE B: 数据持久化与分析
 
 ## B.1 架构设计
@@ -1581,6 +2343,24 @@ src/components/course/
 └── CourseCreator.tsx          # 新增 - 课程创建向导
 ```
 
+### Phase C: 游戏化配置系统 (5+ 个文件)
+```
+config/
+├── game.config.json           # 新增 - 全局游戏配置
+├── courses/
+│   ├── zeabur.course.json     # 新增 - Zeabur 课程配置
+│   └── python.course.json     # 新增 - Python 课程配置
+
+src/types/
+└── config.ts                  # 新增 - 配置类型定义
+
+src/services/
+└── configService.ts           # 新增 - 配置加载服务
+
+src/components/settings/
+└── ConfigEditor.tsx           # 新增 - 配置编辑器 (可选)
+```
+
 ### Phase B: 数据分析 (4 个文件)
 ```
 src/services/
@@ -1602,11 +2382,15 @@ src/components/settings/
 | A.2 | AI 生成服务 | 60min | P0 |
 | A.3 | 创建向导 UI | 60min | P0 |
 | A.4 | 动态课程管理 | 30min | P1 |
+| **C.1** | **课程/关卡配置文件设计** | **45min** | **P0** |
+| **C.2** | **配置服务 (configService)** | **45min** | **P0** |
+| **C.3** | **配置热加载与迁移** | **30min** | **P1** |
+| **C.4** | **配置编辑器 UI** | **30min** | **P2** |
 | B.1 | IndexedDB 存储 | 45min | P0 |
 | B.2 | 埋点收集 | 30min | P0 |
 | B.3 | 分析引擎 | 45min | P1 |
 | B.4 | 数据备份 | 30min | P1 |
-| **总计** | | **6-7h** | |
+| **总计** | | **8-10h** | |
 
 ---
 
@@ -1620,6 +2404,17 @@ src/components/settings/
 - [ ] AI 可根据内容生成课程
 - [ ] 自定义课程显示在课程切换 Tab
 - [ ] 自定义课程可正常闯关
+
+### Phase C 验收 (配置系统)
+- [ ] `game.config.json` 可正确加载
+- [ ] 课程配置从 JSON 文件读取 (非硬编码)
+- [ ] 关卡配置支持难度默认值继承
+- [ ] `configService.get()` 支持点号路径访问
+- [ ] `configService.override()` 可覆盖配置并持久化
+- [ ] 星星评分规则从配置读取
+- [ ] 自动进入下一关功能可配置
+- [ ] 配置编辑器可修改参数 (可选)
+- [ ] `constants.ts` 课程数据迁移至 JSON
 
 ### Phase B 验收
 - [ ] IndexedDB 可存储埋点事件
@@ -1635,14 +2430,40 @@ src/components/settings/
 
 按优先级顺序执行：
 
-1. **Step A.1**: `importService.ts` - 内容导入核心
-2. **Step B.1**: `storageService.ts` - 数据存储基础
-3. **Step A.2**: `courseGeneratorService.ts` - AI 生成
-4. **Step B.2**: `analyticsService.ts` - 埋点收集
-5. **Step A.3**: `CourseCreator.tsx` - 创建向导 UI
-6. **Step B.3**: `analysisService.ts` - 分析引擎
-7. **Step A.4**: 动态课程管理集成
-8. **Step B.4**: `DataBackup.tsx` - 备份 UI
+1. **Step C.1**: `config/game.config.json` + `config/courses/*.json` - 配置文件结构
+2. **Step C.2**: `configService.ts` - 配置加载服务
+3. **Step A.1**: `importService.ts` - 内容导入核心
+4. **Step B.1**: `storageService.ts` - 数据存储基础
+5. **Step A.2**: `courseGeneratorService.ts` - AI 生成
+6. **Step B.2**: `analyticsService.ts` - 埋点收集
+7. **Step A.3**: `CourseCreator.tsx` - 创建向导 UI
+8. **Step C.3**: 将 `constants.ts` 课程数据迁移至 JSON
+9. **Step B.3**: `analysisService.ts` - 分析引擎
+10. **Step A.4**: 动态课程管理集成
+11. **Step B.4**: `DataBackup.tsx` - 备份 UI
+12. **Step C.4**: `ConfigEditor.tsx` - 配置编辑器 (可选)
 
 **开始吧！** 🎯
+
+---
+
+## 💡 配置系统核心价值
+
+### 为什么要配置化？
+
+| 硬编码方式 | 配置化方式 |
+|-----------|-----------|
+| 修改关卡需重新构建 | 修改 JSON 即时生效 |
+| 参数散落在代码各处 | 参数集中管理 |
+| 非技术人员无法调整 | 运营人员可自助配置 |
+| A/B 测试困难 | 配置切换即可测试 |
+| 每个课程需写代码 | 复制 JSON 即可创建 |
+
+### 配置系统设计原则
+
+1. **数据驱动**: 关卡内容、难度参数全部外置
+2. **默认值继承**: 难度级别 → 全局默认 → 关卡覆盖
+3. **运行时覆盖**: 用户可在设置中调整，存入 localStorage
+4. **类型安全**: TypeScript 类型定义确保配置正确
+5. **热加载**: 未来支持不重启应用刷新配置
 

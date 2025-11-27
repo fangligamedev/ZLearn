@@ -1,0 +1,30 @@
+{
+  "$schema": "../schemas/course.schema.json",
+  "id": "python-kids",
+  "version": "1.0.0",
+  "metadata": {
+    "name": "Python 少儿编程",
+    "icon": "🐍",
+    "description": "写代码闯关，逐关升级",
+    "author": "Lalalearn Team",
+    "tags": [
+      "Python",
+      "编程基础"
+    ],
+    "difficulty": "beginner",
+    "estimatedTime": "45分钟",
+    "targetAudience": [
+      "K12",
+      "编程入门"
+    ]
+  },
+  "settings": {
+    "type": "code",
+    "questionModes": [],
+    "difficultyProgression": "progressive",
+    "shuffleQuestions": false,
+    "allowSkip": true
+  },
+  "maps": [],
+  "levels": []
+}

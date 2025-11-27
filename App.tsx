@@ -1,6 +1,6 @@
 
 import React, { useState, useEffect, useRef } from 'react';
-import { Bot, Map as MapIcon, RotateCcw, Play, Languages, User, Star, Terminal, AlertTriangle, CheckCircle, XCircle, Timer, Zap, Trophy, Users, BarChart3 } from 'lucide-react';
+import { Bot, Map as MapIcon, RotateCcw, Play, Languages, User, Star, Terminal, AlertTriangle, CheckCircle, XCircle, Timer, Zap, Trophy, Users, BarChart3, PlusCircle, Settings, Database } from 'lucide-react';
 import CodeEditor from './components/CodeEditor';
 import CoachChat from './components/CoachChat';
 import LevelMap from './components/LevelMap';
@@ -10,10 +10,16 @@ import LeaderboardModal from './components/LeaderboardModal';
 import UserSelectModal from './components/UserSelectModal';   
 import QuestionRenderer from './components/questions/QuestionRenderer';
 import ReviewModal from './components/ReviewModal';
-import { getLevels, UI_STRINGS, LEVEL_COUNT, getCourseById, PYTHON_CODE_COURSE, ZEABUR_COURSE } from './constants';
+import { getLevels, UI_STRINGS, LEVEL_COUNT } from './constants';
 import { validateCodeWithGemini, sendChatMessage } from './services/geminiService';
-import { UserState, MessageRole, ChatMessage, CoachPersona, LevelData, ConceptLevel, ConceptQuestion } from './types';
+import { UserState, MessageRole, ChatMessage, CoachPersona, LevelData, ConceptLevel, ConceptQuestion, Course } from './types';
 import { audio } from './services/audioService';
+import CourseCreator from './components/course/CourseCreator';
+import { configService } from './services/configService';
+import ConfigEditor from './components/settings/ConfigEditor';
+import DataBackup from './components/settings/DataBackup';
+import { analyticsService, EVENTS } from './services/analyticsService';
+import { storageService } from './services/storageService';
 
 const App: React.FC = () => {
   // --- Global State (Multi-User) ---
@@ -23,6 +29,8 @@ const App: React.FC = () => {
   const [showReview, setShowReview] = useState(false);
 
   // --- Current User State ---
+  const initialCourses = React.useMemo(() => configService.getCourses(), []);
+  const [courses, setCourses] = useState<Course[]>(initialCourses);
   const [userState, setUserState] = useState<UserState>({
     id: 'default',
     currentLevel: 1,
@@ -40,11 +48,16 @@ const App: React.FC = () => {
     currentBank: 'A'
   });
 
-  const [selectedCourseId, setSelectedCourseId] = useState<string>(ZEABUR_COURSE.id);
-  const [conceptProgress, setConceptProgress] = useState<{ currentLevel: number; levelStars: Record<number, number>; }>({
-    currentLevel: 1,
-    levelStars: {}
-  });
+  const [selectedCourseId, setSelectedCourseId] = useState<string>(initialCourses[0]?.id || '');
+  const [conceptProgressMap, setConceptProgressMap] = useState<Record<string, { currentLevel: number; levelStars: Record<number, number>; }>>({});
+  useEffect(() => {
+    // 确保初始课程都有进度
+    const map: typeof conceptProgressMap = {};
+    initialCourses.forEach(c => {
+      map[c.id] = { currentLevel: 1, levelStars: {} };
+    });
+    setConceptProgressMap(map);
+  }, [initialCourses]);
   const [currentConceptLevel, setCurrentConceptLevel] = useState<ConceptLevel | null>(null);
 
   const [activeLevelId, setActiveLevelId] = useState<number | null>(null);
@@ -68,25 +81,56 @@ const App: React.FC = () => {
   const [showConceptResult, setShowConceptResult] = useState(false);
   const [conceptIsCorrect, setConceptIsCorrect] = useState<boolean | null>(null);
   const [conceptAttempts, setConceptAttempts] = useState<number>(0); // 用于评星扣分
-  const [conceptHistory, setConceptHistory] = useState<{ levelId: number; question: string; correct: boolean; userAnswer: string | boolean | null; map?: string; durationMs?: number; answeredAt?: number }[]>([]);
+  const [conceptHistory, setConceptHistory] = useState<{ levelId: number; question: string; correct: boolean; userAnswer: string | boolean | null; map?: string; durationMs?: number; answeredAt?: number; courseId?: string }[]>([]);
   const [conceptSummary, setConceptSummary] = useState<{ map?: string; stars?: number; lastLevel?: number } | null>(null);
   const [conceptStartTime, setConceptStartTime] = useState<number>(Date.now());
+  const [showCourseCreator, setShowCourseCreator] = useState(false);
+  const [showConfigEditor, setShowConfigEditor] = useState(false);
+  const [showBackup, setShowBackup] = useState(false);
 
   const ui = UI_STRINGS[userState.language];
   const codeLevels = getLevels(userState.language, userState.currentBank);
-  const currentCourse = getCourseById(selectedCourseId) || PYTHON_CODE_COURSE;
-  const isConceptCourse = currentCourse.type === 'concept';
+  const currentCourse = courses.find(c => c.id === selectedCourseId) || courses[0] || { id: 'fallback', name: '课程', icon: '📘', type: 'code', levels: [] };
+  useEffect(() => {
+    setCourses(configService.getCourses());
+  }, []);
+
+  useEffect(() => {
+    // 确保每个课程都有进度记录
+    const map: typeof conceptProgressMap = { ...conceptProgressMap };
+    courses.forEach(c => {
+      if (c.type === 'concept' && !map[c.id]) {
+        map[c.id] = { currentLevel: 1, levelStars: {} };
+      }
+    });
+    setConceptProgressMap(map);
+  }, [courses]);
+  const currentConceptProgress = React.useMemo(
+    () => conceptProgressMap[currentCourse?.id || ''] || { currentLevel: 1, levelStars: {} },
+    [conceptProgressMap, currentCourse?.id]
+  );
+  const isConceptCourse = currentCourse?.type === 'concept';
   const isConceptSession = Boolean(isConceptCourse && currentConceptLevel && activeLevelId);
   const isCodeSession = Boolean(!isConceptCourse && activeLevelId && currentLevelData);
+  const starRules = configService.get<{ firstAttempt: number; secondAttempt: number; thirdOrMore: number }>('scoring.starRules') || { firstAttempt: 3, secondAttempt: 2, thirdOrMore: 1 };
+  const starsFromAttempts = (attempts: number) => {
+    if (attempts <= 0) return starRules.firstAttempt;
+    if (attempts === 1) return starRules.secondAttempt;
+    return starRules.thirdOrMore;
+  };
+  const historyForCurrentCourse = React.useMemo(
+    () => conceptHistory.filter(h => !h.courseId || h.courseId === currentCourse?.id),
+    [conceptHistory, currentCourse?.id]
+  );
   const totalTimeYesterdayMs = React.useMemo(() => {
     const now = Date.now();
     const startOfToday = new Date();
     startOfToday.setHours(0, 0, 0, 0);
     const startOfYesterday = startOfToday.getTime() - 24 * 60 * 60 * 1000;
     return conceptHistory
-      .filter(h => (h.answeredAt || 0) >= startOfYesterday && (h.answeredAt || 0) < startOfToday.getTime())
+      .filter(h => (!h.courseId || h.courseId === currentCourse?.id) && (h.answeredAt || 0) >= startOfYesterday && (h.answeredAt || 0) < startOfToday.getTime())
       .reduce((acc, cur) => acc + (cur.durationMs || 0), 0);
-  }, [conceptHistory]);
+  }, [conceptHistory, currentCourse?.id]);
   const goToNextConceptLevel = () => {
     if (!currentCourse || currentCourse.type !== 'concept' || !currentConceptLevel) return;
     const levels = currentCourse.levels as ConceptLevel[];
@@ -94,6 +138,7 @@ const App: React.FC = () => {
     if (next) {
       setActiveLevelId(next.id);
       setCurrentConceptLevel(next);
+      analyticsService.trackLevelStart(currentCourse.id, next.id);
       setConceptAnswer(null);
       setConceptIsCorrect(null);
       setShowConceptResult(false);
@@ -111,6 +156,14 @@ const App: React.FC = () => {
   };
 
   // --- Initialization & Persistence ---
+  useEffect(() => {
+    storageService.init().catch(err => console.warn('IndexedDB init failed', err));
+    const loadedCourses = configService.getCourses();
+    setCourses(loadedCourses);
+    if (!selectedCourseId && loadedCourses[0]) {
+      setSelectedCourseId(loadedCourses[0].id);
+    }
+  }, []);
 
   // 1. Load players
   useEffect(() => {
@@ -143,6 +196,23 @@ const App: React.FC = () => {
       setAllPlayers(prev => prev.map(p => p.id === userState.id ? userState : p));
     }
   }, [userState]);
+
+  useEffect(() => {
+    if (userState.id === 'default') return;
+    analyticsService.init(userState.id);
+    analyticsService.trackPageView('home');
+    return () => {
+      analyticsService.destroy();
+    };
+  }, [userState.id]);
+
+  useEffect(() => {
+    if (!selectedCourseId) return;
+    setConceptProgressMap(prev => {
+      if (prev[selectedCourseId]) return prev;
+      return { ...prev, [selectedCourseId]: { currentLevel: 1, levelStars: {} } };
+    });
+  }, [selectedCourseId]);
 
 
   // --- Effects (Level Logic) ---
@@ -224,8 +294,8 @@ const App: React.FC = () => {
     setActiveLevelId(null);
     setCurrentLevelData(null);
     setCurrentConceptLevel(null);
-    setConceptProgress({ currentLevel: 1, levelStars: {} });
-    setSelectedCourseId(PYTHON_CODE_COURSE.id);
+    setConceptProgressMap({});
+    setSelectedCourseId(courses[0]?.id || '');
     setShowConceptResult(false);
     setConceptAnswer(null);
     setConceptIsCorrect(null);
@@ -242,6 +312,7 @@ const App: React.FC = () => {
   };
 
   const handleLevelSelect = (id: number) => {
+    audio.play('CLICK');
     if (isConceptCourse && currentCourse.type === 'concept') {
       const conceptLevel = (currentCourse.levels as ConceptLevel[]).find(l => l.id === id);
       if (conceptLevel) {
@@ -257,6 +328,7 @@ const App: React.FC = () => {
           ? (conceptLevel.questions[0] as any).question
           : (conceptLevel.questions?.[0] as any)?.question || (conceptLevel.questions?.[0] as any)?.statement || conceptLevel.title;
         setMessages([{ role: MessageRole.MODEL, text: firstQuestionText }]);
+        analyticsService.trackLevelStart(currentCourse.id, id);
       }
       return;
     }
@@ -278,6 +350,7 @@ const App: React.FC = () => {
       
       setCurrentLevelData(finalLevel);
       setActiveLevelId(id);
+      analyticsService.trackLevelStart(currentCourse.id, id);
       if (tutorialStep === 1) setTutorialStep(2);
     }
   };
@@ -287,6 +360,8 @@ const App: React.FC = () => {
   };
 
   const handleCourseSelect = (courseId: string) => {
+    audio.play('CLICK');
+    analyticsService.trackCourseSelect(courseId);
     setSelectedCourseId(courseId);
     setActiveLevelId(null);
     setCurrentLevelData(null);
@@ -296,11 +371,12 @@ const App: React.FC = () => {
     setConceptAttempts(0);
     setConceptStartTime(Date.now());
 
-    if (courseId === ZEABUR_COURSE.id) {
-      const course = getCourseById(courseId);
-      if (course && course.type === 'concept') {
-        const levels = course.levels as ConceptLevel[];
-        const target = levels.find(l => l.id === conceptProgress.currentLevel) || levels[0];
+    const course = courses.find(c => c.id === courseId);
+    if (course && course.type === 'concept') {
+      const progress = conceptProgressMap[courseId] || { currentLevel: 1, levelStars: {} };
+      const levels = course.levels as ConceptLevel[];
+      const target = levels.find(l => l.id === progress.currentLevel) || levels[0];
+      if (target) {
         setCurrentConceptLevel(target);
         setActiveLevelId(target.id);
         const firstQuestionText = target.questions?.[0]?.type === 'fill_blank'
@@ -341,7 +417,7 @@ const App: React.FC = () => {
   };
 
   const handleConceptAnswer = (answer: string | boolean) => {
-    if (!currentConceptLevel) return;
+    if (!currentConceptLevel || !currentCourse) return;
     const question = currentConceptLevel.questions[0];
     const isCorrect = question ? checkConceptAnswer(question, answer) : false;
 
@@ -351,6 +427,7 @@ const App: React.FC = () => {
     setShowConceptResult(true);
     const answeredAt = Date.now();
     const durationMs = Math.max(0, answeredAt - conceptStartTime);
+    analyticsService.trackAnswer(currentCourse.id, currentConceptLevel.id, isCorrect, conceptAttempts + 1);
     setConceptHistory(prev => [...prev, {
       levelId: currentConceptLevel.id,
       question: (question as any).question || (question as any).statement || '',
@@ -358,27 +435,43 @@ const App: React.FC = () => {
       userAnswer: answer,
       map: currentConceptLevel.map,
       durationMs,
-      answeredAt
+      answeredAt,
+      courseId: currentCourse.id
     }]);
 
     if (isCorrect) {
       audio.play('WIN');
       const baseScore = 1000;
       const totalScore = baseScore;
-      const newStars = conceptAttempts === 0 ? 3 : conceptAttempts === 1 ? 2 : 1;
+      const newStars = starsFromAttempts(conceptAttempts);
 
       setEarnedStars(newStars);
       setScoreData({ score: totalScore, timeBonus: 0 });
       setUserState(prev => ({ ...prev, xp: prev.xp + totalScore }));
       setConceptAttempts(0);
+      analyticsService.trackLevelComplete(currentCourse.id, currentConceptLevel.id, newStars, durationMs);
+      storageService.saveProgress({
+        id: `${userState.id}-${currentCourse.id}-${currentConceptLevel.id}`,
+        userId: userState.id,
+        courseId: currentCourse.id,
+        levelId: currentConceptLevel.id,
+        stars: newStars,
+        attempts: conceptAttempts + 1,
+        timeSpent: durationMs,
+        completedAt: answeredAt
+      }).catch(err => console.warn('保存进度失败', err));
 
-      setConceptProgress(prev => {
-        const currentStars = prev.levelStars[currentConceptLevel.id] || 0;
+      setConceptProgressMap(prev => {
+        const prevProgress = prev[currentCourse.id] || { currentLevel: 1, levelStars: {} };
+        const currentStars = prevProgress.levelStars[currentConceptLevel.id] || 0;
         const updatedStars = Math.max(currentStars, newStars);
-        const canAdvance = currentConceptLevel.id === prev.currentLevel;
+        const canAdvance = currentConceptLevel.id === prevProgress.currentLevel;
         return {
-          currentLevel: canAdvance ? prev.currentLevel + 1 : prev.currentLevel,
-          levelStars: { ...prev.levelStars, [currentConceptLevel.id]: updatedStars }
+          ...prev,
+          [currentCourse.id]: {
+            currentLevel: canAdvance ? prevProgress.currentLevel + 1 : prevProgress.currentLevel,
+            levelStars: { ...prevProgress.levelStars, [currentConceptLevel.id]: updatedStars }
+          }
         };
       });
       // map 完成提示
@@ -387,6 +480,10 @@ const App: React.FC = () => {
       const lastInMap = sameMapLevels.length > 0 ? sameMapLevels[sameMapLevels.length - 1] : null;
       if (lastInMap && lastInMap.id === currentConceptLevel.id) {
         setConceptSummary({ map: currentConceptLevel.map, stars: newStars, lastLevel: currentConceptLevel.id });
+      }
+      if (configService.get<boolean>('progression.autoAdvance')) {
+        const delay = configService.get<number>('progression.autoAdvanceDelay') || 1200;
+        setTimeout(() => goToNextConceptLevel(), delay);
       }
     } else {
       audio.play('LOSE');
@@ -420,9 +517,9 @@ const App: React.FC = () => {
       const totalScore = baseScore + timeBonus;
       
       const percentLeft = timeLeft / (currentLevelData.timeLimit || 60);
-      let newStars = 1;
-      if (percentLeft > 0.5) newStars = 3;
-      else if (percentLeft > 0.2) newStars = 2;
+      let newStars = starRules.thirdOrMore;
+      if (percentLeft > 0.5) newStars = starRules.firstAttempt;
+      else if (percentLeft > 0.2) newStars = starRules.secondAttempt;
 
       setEarnedStars(newStars);
       setScoreData({ score: totalScore, timeBonus });
@@ -439,6 +536,17 @@ const App: React.FC = () => {
           levelStars: { ...prev.levelStars, [currentLevelData.id]: Math.max(currentLevelStars, newStars) }
         };
       });
+      analyticsService.trackLevelComplete(currentCourse.id, currentLevelData.id, newStars, (currentLevelData.timeLimit || 60) - timeLeft);
+      storageService.saveProgress({
+        id: `${userState.id}-${currentCourse.id}-${currentLevelData.id}`,
+        userId: userState.id,
+        courseId: currentCourse.id,
+        levelId: currentLevelData.id,
+        stars: newStars,
+        attempts: 1,
+        timeSpent: (currentLevelData.timeLimit || 60) - timeLeft,
+        completedAt: Date.now()
+      }).catch(err => console.warn('保存进度失败', err));
       setTimeout(() => setShowVictory(true), 800);
     } else {
        if (timeLeft > 0) {
@@ -458,6 +566,7 @@ const App: React.FC = () => {
     const newMsg: ChatMessage = { role: MessageRole.USER, text };
     setMessages(prev => [...prev, newMsg]);
     setIsChatLoading(true);
+    analyticsService.track(EVENTS.COACH_CHAT, { courseId: currentCourse?.id, levelId: activeLevelId });
 
     const personaForChat: CoachPersona = isConceptSession ? 'mentor' : userState.settings.persona;
 
@@ -506,6 +615,28 @@ const App: React.FC = () => {
     setUserState(prev => ({ ...prev, settings: { voiceURI: voice || null, persona } }));
   };
 
+  const handleCourseCreated = (course: Course) => {
+    const refreshed = configService.getCourses();
+    setCourses(refreshed);
+    setSelectedCourseId(course.id);
+    setConceptProgressMap(prev => ({ ...prev, [course.id]: { currentLevel: 1, levelStars: {} } }));
+    setShowCourseCreator(false);
+  };
+
+  const handleDeleteCourse = (courseId: string) => {
+    configService.deleteCustomCourse(courseId);
+    const updated = configService.getCourses();
+    const stored = JSON.parse(localStorage.getItem('zlearn_custom_courses') || '[]');
+    const filtered = Array.isArray(stored) ? stored.filter((c: any) => c.id !== courseId) : [];
+    localStorage.setItem('zlearn_custom_courses', JSON.stringify(filtered));
+    setCourses(updated);
+    if (selectedCourseId === courseId) {
+      setSelectedCourseId(updated[0]?.id || '');
+      setCurrentConceptLevel(null);
+      setActiveLevelId(null);
+    }
+  };
+
   return (
     <div className="flex flex-col h-screen bg-slate-950 text-white overflow-hidden font-fredoka selection:bg-purple-500/30">
       
@@ -532,16 +663,36 @@ const App: React.FC = () => {
           open={showReview}
           onClose={() => setShowReview(false)}
           course={currentCourse.type === 'concept' ? currentCourse : null}
-          conceptProgress={conceptProgress}
-          history={conceptHistory}
+          conceptProgress={currentConceptProgress}
+          history={historyForCurrentCourse}
           totalTimeYesterdayMs={totalTimeYesterdayMs}
           onGenerateSummary={async () => {
-            const mistakes = conceptHistory.filter(h => !h.correct).slice(-5).map(m => `#${m.levelId} ${m.question} | ans: ${m.userAnswer}`);
+            const mistakes = historyForCurrentCourse.filter(h => !h.correct).slice(-5).map(m => `#${m.levelId} ${m.question} | ans: ${m.userAnswer}`);
             const prompt = `作为教练，基于这些错题和进度给出3条精炼建议，中文：\n${mistakes.join('\n') || '暂无错题'}`;
-            const resp = await sendChatMessage([], prompt, userState.language, 'mentor', { currentLevel: conceptProgress.currentLevel, currentCode: '', userXp: userState.xp });
+            const resp = await sendChatMessage([], prompt, userState.language, 'mentor', { currentLevel: currentConceptProgress.currentLevel, currentCode: '', userXp: userState.xp });
             return resp;
           }}
         />
+      )}
+      {showCourseCreator && (
+        <CourseCreator
+          onComplete={handleCourseCreated}
+          onCancel={() => setShowCourseCreator(false)}
+        />
+      )}
+      {showConfigEditor && <ConfigEditor onClose={() => setShowConfigEditor(false)} />}
+      {showBackup && (
+        <div className="fixed inset-0 bg-black/70 flex items-center justify-center z-50 p-4">
+          <div className="bg-slate-900 rounded-2xl w-full max-w-3xl border border-slate-700 shadow-2xl relative">
+            <button
+              onClick={() => setShowBackup(false)}
+              className="absolute right-4 top-4 text-slate-400 hover:text-white font-bold"
+            >
+              ✕
+            </button>
+            <DataBackup />
+          </div>
+        </div>
       )}
 
       {tutorialStep >= 0 && <TutorialOverlay step={tutorialStep} onNext={handleTutorialNext} language={userState.language} />}
@@ -583,6 +734,27 @@ const App: React.FC = () => {
           </div>
 
           <button
+            onClick={() => setShowCourseCreator(true)}
+            className="flex items-center space-x-2 px-4 py-2 bg-slate-800 hover:bg-slate-700 rounded-full text-xs font-bold transition-all border border-slate-700"
+          >
+            <PlusCircle size={16} />
+            <span>自定义课程</span>
+          </button>
+          <button
+            onClick={() => setShowConfigEditor(true)}
+            className="flex items-center space-x-2 px-3 py-2 bg-slate-800 hover:bg-slate-700 rounded-full text-xs font-bold transition-all border border-slate-700"
+          >
+            <Settings size={16} />
+            <span>配置</span>
+          </button>
+          <button
+            onClick={() => setShowBackup(true)}
+            className="flex items-center space-x-2 px-3 py-2 bg-slate-800 hover:bg-slate-700 rounded-full text-xs font-bold transition-all border border-slate-700"
+          >
+            <Database size={16} />
+            <span>备份</span>
+          </button>
+          <button
             onClick={() => setShowReview(true)}
             className="flex items-center space-x-2 px-4 py-2 bg-slate-800 hover:bg-slate-700 rounded-full text-xs font-bold transition-all border border-slate-700"
           >
@@ -603,12 +775,15 @@ const App: React.FC = () => {
           <LevelMap 
             userState={userState} 
             selectedCourseId={selectedCourseId}
-            conceptProgress={conceptProgress}
+            conceptProgress={currentConceptProgress}
+            courses={courses}
             onSelectCourse={handleCourseSelect}
             onSelectLevel={handleLevelSelect} 
             onSelectBank={handleBankSelect} 
             onSwitchUser={handleSwitchUser} 
             onShowLeaderboard={() => setShowLeaderboard(true)}
+            onCreateCourse={() => setShowCourseCreator(true)}
+            onDeleteCourse={handleDeleteCourse}
           />
         ) : isConceptSession && currentConceptLevel ? (
           <div className="flex flex-col md:flex-row h-full gap-4">

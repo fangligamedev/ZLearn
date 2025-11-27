@@ -1,0 +1,64 @@
+{
+  "$schema": "./schemas/game.schema.json",
+  "version": "2.0.0",
+  "scoring": {
+    "baseScore": 1000,
+    "timeBonusMultiplier": 20,
+    "starRules": {
+      "firstAttempt": 3,
+      "secondAttempt": 2,
+      "thirdOrMore": 1
+    },
+    "xpRewards": {
+      "level1Star": 500,
+      "level2Star": 750,
+      "level3Star": 1000,
+      "mapComplete": 500,
+      "courseComplete": 2000
+    }
+  },
+  "difficulty": {
+    "easy": {
+      "timeLimit": 0,
+      "hintsAllowed": 3,
+      "penaltyPerWrong": 0,
+      "showExplanation": true
+    },
+    "medium": {
+      "timeLimit": 60,
+      "hintsAllowed": 2,
+      "penaltyPerWrong": 100,
+      "showExplanation": true
+    },
+    "hard": {
+      "timeLimit": 45,
+      "hintsAllowed": 1,
+      "penaltyPerWrong": 200,
+      "showExplanation": false
+    },
+    "expert": {
+      "timeLimit": 45,
+      "hintsAllowed": 1,
+      "penaltyPerWrong": 300,
+      "showExplanation": false
+    }
+  },
+  "progression": {
+    "unlockMode": "sequential",
+    "requireStarsToUnlock": 0,
+    "allowReplay": true,
+    "autoAdvance": true,
+    "autoAdvanceDelay": 1500
+  },
+  "coach": {
+    "defaultPersona": "professional",
+    "defaultVoice": "zh-CN-XiaoxiaoNeural",
+    "autoReadQuestion": true,
+    "showHintAfterWrong": 2
+  },
+  "review": {
+    "showAfterLevel": true,
+    "showAfterMap": true,
+    "aiSummaryEnabled": true
+  }
+}

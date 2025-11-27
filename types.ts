@@ -124,4 +124,8 @@ export interface Course {
   description?: string;
   type: 'code' | 'concept';
   levels: ConceptLevel[] | LevelData[];
+  maps?: { id: number; title: string; description?: string; levelCount?: number; unlockCondition?: any; bonusXP?: number }[];
+  config?: Record<string, any>;
+  createdAt?: string;
+  isCustom?: boolean;
 }

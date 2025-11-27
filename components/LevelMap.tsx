@@ -1,7 +1,7 @@
 
 import React from 'react';
-import { ALL_COURSES, getCourseById, getLevels, UI_STRINGS } from '../constants';
-import { ConceptLevel, UserState } from '../types';
+import { getLevels, UI_STRINGS } from '../constants';
+import { ConceptLevel, Course, UserState } from '../types';
 import { Lock, Star, Play, Trophy, Users, User } from 'lucide-react';
 import { audio } from '../services/audioService';
 
@@ -12,24 +12,30 @@ interface LevelMapProps {
     currentLevel: number;
     levelStars: Record<number, number>;
   };
+  courses: Course[];
   onSelectLevel: (id: number) => void;
   onSelectBank: (bank: 'A' | 'B' | 'C') => void;
   onSelectCourse: (courseId: string) => void;
   onSwitchUser: () => void;
   onShowLeaderboard: () => void;
+  onCreateCourse?: () => void;
+  onDeleteCourse?: (courseId: string) => void;
 }
 
 const LevelMap: React.FC<LevelMapProps> = ({
   userState,
   selectedCourseId,
   conceptProgress,
+  courses,
   onSelectLevel,
   onSelectBank,
   onSelectCourse,
   onSwitchUser,
-  onShowLeaderboard
+  onShowLeaderboard,
+  onCreateCourse,
+  onDeleteCourse
 }) => {
-  const selectedCourse = getCourseById(selectedCourseId);
+  const selectedCourse = courses.find(c => c.id === selectedCourseId);
   const isConceptCourse = selectedCourse?.type === 'concept';
   const levels = isConceptCourse
     ? (selectedCourse?.levels as ConceptLevel[])
@@ -42,7 +48,8 @@ const LevelMap: React.FC<LevelMapProps> = ({
     if (!isConceptCourse) return [];
     const set = new Set<string>();
     (levels as ConceptLevel[]).forEach(l => { if (l.map) set.add(l.map); });
-    return Array.from(set);
+    const arr = Array.from(set).filter(Boolean);
+    return arr;
   }, [isConceptCourse, levels]);
 
   React.useEffect(() => {
@@ -54,8 +61,10 @@ const LevelMap: React.FC<LevelMapProps> = ({
   }, [selectedCourseId, isConceptCourse, mapOptions]);
 
   const filteredLevels = React.useMemo(() => {
-    if (!isConceptCourse || mapFilter === 'all') return levels;
-    return (levels as ConceptLevel[]).filter(l => l.map === mapFilter);
+    if (!isConceptCourse) return levels;
+    if (mapFilter === 'all' || mapOptions.length === 0) return levels;
+    const filtered = (levels as ConceptLevel[]).filter(l => l.map === mapFilter);
+    return filtered.length > 0 ? filtered : levels;
   }, [isConceptCourse, levels, mapFilter]);
 
   const handleBankChange = (bank: 'A' | 'B' | 'C') => {
@@ -119,20 +128,38 @@ const LevelMap: React.FC<LevelMapProps> = ({
           {/* Right: Course Selector */}
           <div className="flex flex-col gap-3 self-start xl:self-auto">
             <div className="flex flex-wrap gap-2">
-              {ALL_COURSES.map(course => (
-                <button
-                  key={course.id}
-                  onClick={() => handleCourseChange(course.id)}
-                  className={`px-4 py-2 rounded-xl font-bold transition-all border ${
-                    selectedCourseId === course.id
-                      ? 'bg-blue-600 text-white border-blue-400 shadow-lg shadow-blue-900/40'
-                      : 'bg-slate-800 text-slate-200 border-slate-700 hover:bg-slate-700'
-                  }`}
-                >
-                  <span className="mr-2">{course.icon}</span>
-                  {course.name}
-                </button>
+              {courses.map(course => (
+                <div key={course.id} className="relative">
+                  <button
+                    onClick={() => handleCourseChange(course.id)}
+                    className={`px-4 py-2 rounded-xl font-bold transition-all border ${
+                      selectedCourseId === course.id
+                        ? 'bg-blue-600 text-white border-blue-400 shadow-lg shadow-blue-900/40'
+                        : 'bg-slate-800 text-slate-200 border-slate-700 hover:bg-slate-700'
+                    }`}
+                  >
+                    <span className="mr-2">{course.icon}</span>
+                    {course.name}
+                  </button>
+                  {course.isCustom && onDeleteCourse && (
+                    <button
+                      onClick={(e) => { e.stopPropagation(); onDeleteCourse(course.id); }}
+                      className="absolute -top-2 -right-2 w-6 h-6 rounded-full bg-red-600 text-white text-xs font-bold shadow"
+                      title="删除自定义课程"
+                    >
+                      ×
+                    </button>
+                  )}
+                </div>
               ))}
+              {onCreateCourse && (
+                <button
+                  onClick={onCreateCourse}
+                  className="px-4 py-2 rounded-xl font-bold transition-all border bg-slate-900 text-slate-200 border-dashed border-slate-600 hover:bg-slate-800"
+                >
+                  + 自定义课程
+                </button>
+              )}
             </div>
 
             {isConceptCourse && mapOptions.length > 0 && (

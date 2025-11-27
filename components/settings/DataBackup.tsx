@@ -1,9 +1,20 @@
-import React, { useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import { storageService } from '../../services/storageService';
+import { backupService } from '../../services/backupService';
+import { configService } from '../../services/configService';
+import type { CourseConfig } from '../../types/config';
 
 const DataBackup: React.FC = () => {
   const [exporting, setExporting] = useState(false);
   const [importing, setImporting] = useState(false);
+  const [courses, setCourses] = useState<CourseConfig[]>([]);
+  const [selectedIds, setSelectedIds] = useState<Set<string>>(new Set());
+
+  useEffect(() => {
+    const list = configService.getAllCourseConfigs();
+    setCourses(list);
+    setSelectedIds(new Set(list.map((c) => c.id)));
+  }, []);
 
   const handleExport = async () => {
     setExporting(true);
@@ -21,6 +32,49 @@ const DataBackup: React.FC = () => {
       console.error('导出失败', err);
     } finally {
       setExporting(false);
+    }
+  };
+
+  const handleCourseExport = () => {
+    try {
+      const ids = Array.from(selectedIds);
+      const names = courses
+        .filter((c) => selectedIds.has(c.id))
+        .map((c) => c.id)
+        .join('_');
+      const suffix = names ? `_${names}` : '';
+      const data = backupService.exportCourses(ids);
+      const blob = new Blob([data], { type: 'application/json' });
+      const url = URL.createObjectURL(blob);
+      const a = document.createElement('a');
+      a.href = url;
+      a.download = `zlearn_courses_${new Date().toISOString().slice(0, 10)}${suffix}.json`;
+      a.click();
+      URL.revokeObjectURL(url);
+    } catch (err) {
+      console.error('导出课程失败', err);
+      alert('导出课程失败，请重试');
+    }
+  };
+
+  const handleCourseImport = async (e: React.ChangeEvent<HTMLInputElement>) => {
+    const file = e.target.files?.[0];
+    if (!file) return;
+    setImporting(true);
+    try {
+      const text = await file.text();
+      const { imported, renamed } = await backupService.importCourses(text);
+      const renameMsg = renamed.length ? `\n以下已自动改名避免覆盖:\n${renamed.join('\n')}` : '';
+      alert(`导入完成，重建课程 ${imported} 个${renameMsg}`);
+      const list = configService.getAllCourseConfigs();
+      setCourses(list);
+      setSelectedIds(new Set(list.map((c) => c.id)));
+    } catch (err) {
+      console.error('导入课程失败', err);
+      alert('导入课程失败，请检查文件格式');
+    } finally {
+      setImporting(false);
+      e.target.value = '';
     }
   };
 
@@ -54,6 +108,58 @@ const DataBackup: React.FC = () => {
         >
           {exporting ? '导出中...' : '📥 导出备份'}
         </button>
+      </div>
+
+      <div className="border-t border-slate-700 pt-4">
+        <h4 className="font-medium mb-2">课程关卡导出 / 导入</h4>
+        <p className="text-sm text-slate-400 mb-3">选择要导出的课程页签（包含地图、关卡、题干），导入可完整重建关卡。</p>
+        <div className="max-h-40 overflow-auto bg-slate-700/40 rounded-lg p-3 space-y-2 text-sm">
+          {courses.map((c) => (
+            <label key={c.id} className="flex items-center gap-2">
+              <input
+                type="checkbox"
+                checked={selectedIds.has(c.id)}
+                onChange={(e) => {
+                  const next = new Set(selectedIds);
+                  if (e.target.checked) next.add(c.id);
+                  else next.delete(c.id);
+                  setSelectedIds(next);
+                }}
+              />
+              <span className="truncate" title={c.metadata.name}>
+                {c.metadata.name} ({c.id})
+              </span>
+            </label>
+          ))}
+          {courses.length === 0 && <div className="text-slate-400">暂无课程</div>}
+        </div>
+        <div className="mt-3 flex gap-2">
+          <button
+            onClick={() => {
+              setSelectedIds(new Set(courses.map((c) => c.id)));
+            }}
+            className="px-3 py-2 bg-slate-700 rounded-lg"
+          >
+            全选
+          </button>
+          <button
+            onClick={() => setSelectedIds(new Set())}
+            className="px-3 py-2 bg-slate-700 rounded-lg"
+          >
+            全不选
+          </button>
+          <button
+            onClick={handleCourseExport}
+            disabled={selectedIds.size === 0}
+            className="px-4 py-2 bg-indigo-600 hover:bg-indigo-500 disabled:bg-slate-600 rounded-lg"
+          >
+            导出所选课程
+          </button>
+          <label className="inline-flex items-center px-4 py-2 bg-slate-700 hover:bg-slate-600 rounded-lg cursor-pointer">
+            {importing ? '导入中...' : '导入课程'}
+            <input type="file" accept=".json" onChange={handleCourseImport} className="hidden" />
+          </label>
+        </div>
       </div>
       <div>
         <h4 className="font-medium mb-2">恢复数据</h4>

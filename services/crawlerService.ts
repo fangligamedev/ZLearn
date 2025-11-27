@@ -16,25 +16,34 @@ const fetchMarkdown = async (target: string): Promise<string> => {
   return await res.text();
 };
 
-const isDocLink = (url: string) => {
-  try {
-    const u = new URL(url);
-    // 仅同域，且后缀为空或常见文档页
-    const ext = (u.pathname.split('.').pop() || '').toLowerCase();
-    const allowed = ['', 'html', 'htm', 'md', 'markdown'];
-    return allowed.includes(ext);
-  } catch {
-    return false;
-  }
+const isDocLink = (url: URL, baseHost: string) => {
+  // 仅同域，且后缀为空或常见文档页；排除图片/静态资源
+  if (url.hostname !== baseHost) return false;
+  const ext = url.pathname.includes('.')
+    ? (url.pathname.split('.').pop() || '').toLowerCase()
+    : '';
+  const allowed = ['', 'html', 'htm', 'md', 'markdown'];
+  const blocked = ['png', 'jpg', 'jpeg', 'gif', 'svg', 'ico', 'webp', 'css', 'js'];
+  if (blocked.includes(ext)) return false;
+  return allowed.includes(ext);
 };
 
 const extractLinks = (markdown: string, baseUrl: URL, max: number): string[] => {
-  const links = Array.from(markdown.matchAll(/\[[^\]]+]\((https?:\/\/[^)]+)\)/g))
+  // 支持绝对、根相对、目录相对链接（如 quickstart、./quickstart、../intro）
+  const links = Array.from(markdown.matchAll(/\[[^\]]+]\(([^)]+)\)/g))
     .map((m) => m[1])
+    .map((raw) => {
+      try {
+        return new URL(raw, baseUrl).toString();
+      } catch {
+        return '';
+      }
+    })
+    .filter(Boolean)
     .filter((u) => {
       try {
         const parsed = new URL(u);
-        return parsed.hostname === baseUrl.hostname && isDocLink(u);
+        return isDocLink(parsed, baseUrl.hostname);
       } catch {
         return false;
       }
@@ -54,9 +63,11 @@ export class CrawlerService {
   async crawl(startUrl: string, options: CrawlOptions = {}): Promise<CrawledPage[]> {
     const depth = options.depth ?? 2;
     const maxLinks = options.maxLinks ?? 50;
-    const base = new URL(startUrl);
+    // 确保用于解析相对链接的 base URL 末尾带 /
+    const normalizedStart = startUrl.endsWith('/') ? startUrl : `${startUrl}/`;
+    const base = new URL(normalizedStart);
 
-    const queue: { url: string; depth: number }[] = [{ url: startUrl, depth: 0 }];
+    const queue: { url: string; depth: number }[] = [{ url: normalizedStart, depth: 0 }];
     const visited = new Set<string>();
     const pages: CrawledPage[] = [];
 

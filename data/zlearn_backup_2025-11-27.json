@@ -1,0 +1,130 @@
+{
+  "exportedAt": "2025-11-27T11:41:35.430Z",
+  "events": [
+    {
+      "type": "session_start",
+      "userId": "1764135501020",
+      "sessionId": "sess_66032e01-804e-4e74-80ec-776dedfd2c22",
+      "timestamp": 1764240998114,
+      "data": {},
+      "id": "evt_2d9faa15-567d-4c45-b46a-9199364fab2d"
+    },
+    {
+      "type": "session_end",
+      "userId": "1764135501020",
+      "sessionId": "sess_4ce2aa06-0f17-405c-84e9-919e59c43928",
+      "timestamp": 1764226780043,
+      "data": {},
+      "id": "evt_670fbba0-fe93-4704-b426-65322b530759"
+    },
+    {
+      "type": "session_end",
+      "userId": "1764135501020",
+      "sessionId": "sess_6f6c5210-e60f-4286-8747-54cf18febd21",
+      "timestamp": 1764226783690,
+      "data": {},
+      "id": "evt_7e9d7796-df1f-4784-9e60-58e97ed83d35"
+    },
+    {
+      "type": "session_start",
+      "userId": "1764135501020",
+      "sessionId": "sess_a4e3e3a6-9e17-4e38-8714-418f19df22ac",
+      "timestamp": 1764239170124,
+      "data": {},
+      "id": "evt_80380633-757b-447a-8503-ed08d3321f60"
+    },
+    {
+      "type": "session_start",
+      "userId": "1764135501020",
+      "sessionId": "sess_6f6c5210-e60f-4286-8747-54cf18febd21",
+      "timestamp": 1764216727902,
+      "data": {},
+      "id": "evt_8b516c95-7ae9-4e71-82c2-a5c6889b9323"
+    },
+    {
+      "type": "session_end",
+      "userId": "1764135501020",
+      "sessionId": "sess_396b6672-4aa3-4293-8817-fa873ca7b7e8",
+      "timestamp": 1764239168464,
+      "data": {},
+      "id": "evt_9f6e336a-243e-4db9-9ff1-c5658b17964c"
+    },
+    {
+      "type": "session_start",
+      "userId": "1764135501020",
+      "sessionId": "sess_396b6672-4aa3-4293-8817-fa873ca7b7e8",
+      "timestamp": 1764235526460,
+      "data": {},
+      "id": "evt_a1a8c0a4-86f4-44a0-9ae8-cd2c4575b253"
+    },
+    {
+      "type": "session_start",
+      "userId": "1764135501020",
+      "sessionId": "sess_4ce2aa06-0f17-405c-84e9-919e59c43928",
+      "timestamp": 1764212183885,
+      "data": {},
+      "id": "evt_c675e6a7-e0ee-4ec5-9dfa-5f6fea39dc55"
+    },
+    {
+      "type": "session_end",
+      "userId": "1764135501020",
+      "sessionId": "sess_a4e3e3a6-9e17-4e38-8714-418f19df22ac",
+      "timestamp": 1764239971933,
+      "data": {},
+      "id": "evt_d2336def-9da0-4246-b734-914912bebd99"
+    }
+  ],
+  "progress": [],
+  "sessions": [
+    {
+      "id": "sess_396b6672-4aa3-4293-8817-fa873ca7b7e8",
+      "userId": "1764135501020",
+      "startTime": 1764235526444,
+      "duration": 3642022,
+      "levelsCompleted": 0,
+      "correctAnswers": 0,
+      "wrongAnswers": 0,
+      "endTime": 1764239168466
+    },
+    {
+      "id": "sess_4ce2aa06-0f17-405c-84e9-919e59c43928",
+      "userId": "1764135501020",
+      "startTime": 1764212183879,
+      "duration": 14596165,
+      "levelsCompleted": 0,
+      "correctAnswers": 0,
+      "wrongAnswers": 0,
+      "endTime": 1764226780044
+    },
+    {
+      "id": "sess_66032e01-804e-4e74-80ec-776dedfd2c22",
+      "userId": "1764135501020",
+      "startTime": 1764240998095,
+      "duration": 0,
+      "levelsCompleted": 0,
+      "correctAnswers": 0,
+      "wrongAnswers": 0
+    },
+    {
+      "id": "sess_6f6c5210-e60f-4286-8747-54cf18febd21",
+      "userId": "1764135501020",
+      "startTime": 1764216727895,
+      "duration": 10055796,
+      "levelsCompleted": 0,
+      "correctAnswers": 0,
+      "wrongAnswers": 0,
+      "endTime": 1764226783691
+    },
+    {
+      "id": "sess_a4e3e3a6-9e17-4e38-8714-418f19df22ac",
+      "userId": "1764135501020",
+      "startTime": 1764239170107,
+      "duration": 801828,
+      "levelsCompleted": 0,
+      "correctAnswers": 0,
+      "wrongAnswers": 0,
+      "endTime": 1764239971935
+    }
+  ],
+  "courses": []
+}

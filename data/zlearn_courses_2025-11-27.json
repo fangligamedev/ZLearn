@@ -1,0 +1,3599 @@
+{
+  "exportedAt": "2025-11-27T12:10:21.192Z",
+  "courses": [
+    {
+      "$schema": "../schemas/course.schema.json",
+      "id": "zeabur-training",
+      "version": "1.0.0",
+      "metadata": {
+        "name": "Zeabur 云平台速成",
+        "icon": "☁️",
+        "description": "10 分钟掌握 Zeabur 核心概念",
+        "author": "Lalalearn Team",
+        "tags": [
+          "Zeabur",
+          "云平台",
+          "DevOps"
+        ],
+        "difficulty": "beginner",
+        "estimatedTime": "60分钟",
+        "targetAudience": [
+          "新人培训",
+          "销售/市场",
+          "开发者"
+        ]
+      },
+      "settings": {
+        "type": "concept",
+        "questionModes": [
+          "single_choice",
+          "true_false",
+          "fill_blank"
+        ],
+        "difficultyProgression": "progressive",
+        "shuffleQuestions": false,
+        "allowSkip": false
+      },
+      "maps": [
+        {
+          "id": 0,
+          "title": "M1 平台概览",
+          "description": "",
+          "unlockCondition": null,
+          "bonusXP": 0
+        },
+        {
+          "id": 1,
+          "title": "M2 计费与配额",
+          "description": "",
+          "unlockCondition": {
+            "mapId": 0,
+            "minStars": 0
+          },
+          "bonusXP": 0
+        },
+        {
+          "id": 2,
+          "title": "M3 部署入口",
+          "description": "",
+          "unlockCondition": {
+            "mapId": 1,
+            "minStars": 0
+          },
+          "bonusXP": 0
+        },
+        {
+          "id": 3,
+          "title": "M4 构建与运行时",
+          "description": "",
+          "unlockCondition": {
+            "mapId": 2,
+            "minStars": 0
+          },
+          "bonusXP": 0
+        },
+        {
+          "id": 4,
+          "title": "M5 环境与密钥",
+          "description": "",
+          "unlockCondition": {
+            "mapId": 3,
+            "minStars": 0
+          },
+          "bonusXP": 0
+        },
+        {
+          "id": 5,
+          "title": "M6 域名与网络",
+          "description": "",
+          "unlockCondition": {
+            "mapId": 4,
+            "minStars": 0
+          },
+          "bonusXP": 0
+        },
+        {
+          "id": 6,
+          "title": "M7 数据与中间件",
+          "description": "",
+          "unlockCondition": {
+            "mapId": 5,
+            "minStars": 0
+          },
+          "bonusXP": 0
+        },
+        {
+          "id": 7,
+          "title": "M8 监控与日志",
+          "description": "",
+          "unlockCondition": {
+            "mapId": 6,
+            "minStars": 0
+          },
+          "bonusXP": 0
+        },
+        {
+          "id": 8,
+          "title": "M9 安全与权限",
+          "description": "",
+          "unlockCondition": {
+            "mapId": 7,
+            "minStars": 0
+          },
+          "bonusXP": 0
+        },
+        {
+          "id": 9,
+          "title": "M10 运营与排障",
+          "description": "",
+          "unlockCondition": {
+            "mapId": 8,
+            "minStars": 0
+          },
+          "bonusXP": 0
+        }
+      ],
+      "levels": [
+        {
+          "id": 1,
+          "mapIndex": 0,
+          "title": "什么是 Zeabur",
+          "description": "了解 Zeabur 的基本定位",
+          "difficulty": "easy",
+          "config": {
+            "timeLimit": 0,
+            "maxAttempts": 0,
+            "showHints": true,
+            "hintCost": 0,
+            "xpBase": 100,
+            "xpBonus": {
+              "noHint": 20,
+              "fastComplete": 30,
+              "firstTry": 50
+            }
+          },
+          "question": {
+            "type": "single_choice",
+            "question": "Zeabur 是什么类型的平台？",
+            "options": [
+              {
+                "key": "A",
+                "text": "社交媒体平台"
+              },
+              {
+                "key": "B",
+                "text": "应用部署与托管平台"
+              },
+              {
+                "key": "C",
+                "text": "电商购物平台"
+              },
+              {
+                "key": "D",
+                "text": "视频流媒体平台"
+              }
+            ],
+            "correctAnswer": "B",
+            "explanation": "Zeabur 帮助开发者快速部署和托管应用。"
+          }
+        },
+        {
+          "id": 2,
+          "mapIndex": 0,
+          "title": "适用人群",
+          "description": "了解 Zeabur 面向的角色",
+          "difficulty": "easy",
+          "config": {
+            "timeLimit": 0,
+            "maxAttempts": 0,
+            "showHints": true,
+            "hintCost": 0,
+            "xpBase": 100,
+            "xpBonus": {
+              "noHint": 20,
+              "fastComplete": 30,
+              "firstTry": 50
+            }
+          },
+          "question": {
+            "type": "true_false",
+            "statement": "Zeabur 只面向后端工程师使用。",
+            "correctAnswer": false,
+            "explanation": "市场、前端、后端、独立开发者都可用。"
+          }
+        },
+        {
+          "id": 3,
+          "mapIndex": 0,
+          "title": "核心优势",
+          "description": "掌握开箱即用和按量计费",
+          "difficulty": "medium",
+          "config": {
+            "timeLimit": 0,
+            "maxAttempts": 0,
+            "showHints": true,
+            "hintCost": 0,
+            "xpBase": 100,
+            "xpBonus": {
+              "noHint": 20,
+              "fastComplete": 30,
+              "firstTry": 50
+            }
+          },
+          "question": {
+            "type": "single_choice",
+            "question": "Zeabur 的突出优势是？",
+            "options": [
+              {
+                "key": "A",
+                "text": "固定月费且需手动 CI/CD"
+              },
+              {
+                "key": "B",
+                "text": "按量计费+自动识别项目"
+              },
+              {
+                "key": "C",
+                "text": "只支持 Docker 手工部署"
+              },
+              {
+                "key": "D",
+                "text": "需要自建服务器"
+              }
+            ],
+            "correctAnswer": "B",
+            "explanation": "自动构建/部署，按量计费，降低初期成本。"
+          }
+        },
+        {
+          "id": 4,
+          "mapIndex": 0,
+          "title": "支持的技术栈",
+          "description": "语言与框架覆盖",
+          "difficulty": "medium",
+          "config": {
+            "timeLimit": 0,
+            "maxAttempts": 0,
+            "showHints": true,
+            "hintCost": 0,
+            "xpBase": 100,
+            "xpBonus": {
+              "noHint": 20,
+              "fastComplete": 30,
+              "firstTry": 50
+            }
+          },
+          "question": {
+            "type": "single_choice",
+            "question": "下列哪一项不是 Zeabur 支持的技术栈？",
+            "options": [
+              {
+                "key": "A",
+                "text": "Node.js"
+              },
+              {
+                "key": "B",
+                "text": "Python"
+              },
+              {
+                "key": "C",
+                "text": "Go"
+              },
+              {
+                "key": "D",
+                "text": "只能 PHP"
+              }
+            ],
+            "correctAnswer": "D",
+            "explanation": "Zeabur 支持 Node.js/Python/Go/Java/Rust 等。"
+          }
+        },
+        {
+          "id": 5,
+          "mapIndex": 0,
+          "title": "产品形态",
+          "description": "了解 SaaS 化控制台",
+          "difficulty": "medium",
+          "config": {
+            "timeLimit": 0,
+            "maxAttempts": 0,
+            "showHints": true,
+            "hintCost": 0,
+            "xpBase": 100,
+            "xpBonus": {
+              "noHint": 20,
+              "fastComplete": 30,
+              "firstTry": 50
+            }
+          },
+          "question": {
+            "type": "true_false",
+            "statement": "Zeabur 提供可视化控制台和 API/CLI 两种操作方式。",
+            "correctAnswer": true,
+            "explanation": "控制台+CLI/Deploy Button 等入口。"
+          }
+        },
+        {
+          "id": 6,
+          "mapIndex": 0,
+          "title": "场景匹配",
+          "description": "选择合适的使用场景",
+          "difficulty": "hard",
+          "config": {
+            "timeLimit": 0,
+            "maxAttempts": 0,
+            "showHints": true,
+            "hintCost": 0,
+            "xpBase": 100,
+            "xpBonus": {
+              "noHint": 20,
+              "fastComplete": 30,
+              "firstTry": 50
+            }
+          },
+          "question": {
+            "type": "single_choice",
+            "question": "适合使用 Zeabur 的场景是？",
+            "options": [
+              {
+                "key": "A",
+                "text": "需要自管物理机的 HPC 场景"
+              },
+              {
+                "key": "B",
+                "text": "快速上线 SaaS/小程序/静态站"
+              },
+              {
+                "key": "C",
+                "text": "只能本地运行的离线任务"
+              },
+              {
+                "key": "D",
+                "text": "仅数据库托管"
+              }
+            ],
+            "correctAnswer": "B",
+            "explanation": "Zeabur 适合快速发布 Web/后端/静态站。"
+          }
+        },
+        {
+          "id": 7,
+          "mapIndex": 0,
+          "title": "计费模型概览",
+          "description": "费用组成要素",
+          "difficulty": "hard",
+          "config": {
+            "timeLimit": 0,
+            "maxAttempts": 0,
+            "showHints": true,
+            "hintCost": 0,
+            "xpBase": 100,
+            "xpBonus": {
+              "noHint": 20,
+              "fastComplete": 30,
+              "firstTry": 50
+            }
+          },
+          "question": {
+            "type": "fill_blank",
+            "question": "Zeabur 的费用主要按 ____ 计费。",
+            "correctAnswers": [
+              "资源用量",
+              "实例资源",
+              "CPU 和内存"
+            ],
+            "explanation": "按资源用量（CPU/内存/带宽）与存储等计费。"
+          }
+        },
+        {
+          "id": 8,
+          "mapIndex": 0,
+          "title": "对比自建方案",
+          "description": "优势劣势快速判断",
+          "difficulty": "expert",
+          "config": {
+            "timeLimit": 0,
+            "maxAttempts": 0,
+            "showHints": true,
+            "hintCost": 0,
+            "xpBase": 100,
+            "xpBonus": {
+              "noHint": 20,
+              "fastComplete": 30,
+              "firstTry": 50
+            }
+          },
+          "question": {
+            "type": "true_false",
+            "statement": "与自建 K8s 相比，Zeabur 减少了集群维护成本。",
+            "correctAnswer": true,
+            "explanation": "SaaS 托管，免集群维护。"
+          }
+        },
+        {
+          "id": 9,
+          "mapIndex": 0,
+          "title": "开箱能力",
+          "description": "默认提供的运维能力",
+          "difficulty": "expert",
+          "config": {
+            "timeLimit": 0,
+            "maxAttempts": 0,
+            "showHints": true,
+            "hintCost": 0,
+            "xpBase": 100,
+            "xpBonus": {
+              "noHint": 20,
+              "fastComplete": 30,
+              "firstTry": 50
+            }
+          },
+          "question": {
+            "type": "single_choice",
+            "question": "以下哪项是 Zeabur 默认提供的？",
+            "options": [
+              {
+                "key": "A",
+                "text": "日志与指标面板"
+              },
+              {
+                "key": "B",
+                "text": "自管防火墙规则编排"
+              },
+              {
+                "key": "C",
+                "text": "手写部署脚本"
+              },
+              {
+                "key": "D",
+                "text": "自带私有机房"
+              }
+            ],
+            "correctAnswer": "A",
+            "explanation": "控制台内置日志、指标和发布管理。"
+          }
+        },
+        {
+          "id": 10,
+          "mapIndex": 0,
+          "title": "综合测验",
+          "description": "总结平台核心卖点",
+          "difficulty": "expert",
+          "config": {
+            "timeLimit": 0,
+            "maxAttempts": 0,
+            "showHints": true,
+            "hintCost": 0,
+            "xpBase": 100,
+            "xpBonus": {
+              "noHint": 20,
+              "fastComplete": 30,
+              "firstTry": 50
+            }
+          },
+          "question": {
+            "type": "single_choice",
+            "question": "一句话介绍 Zeabur，最准确的是？",
+            "options": [
+              {
+                "key": "A",
+                "text": "手工配置的 VPS 托管"
+              },
+              {
+                "key": "B",
+                "text": "按量计费、自动识别项目的云原生部署平台"
+              },
+              {
+                "key": "C",
+                "text": "仅限静态站的 CDN 平台"
+              },
+              {
+                "key": "D",
+                "text": "只提供数据库托管"
+              }
+            ],
+            "correctAnswer": "B",
+            "explanation": "核心：自动化构建/部署 + 按量计费 + 多语言。"
+          }
+        },
+        {
+          "id": 11,
+          "mapIndex": 1,
+          "title": "计费模式",
+          "description": "按量计费概念",
+          "difficulty": "easy",
+          "config": {
+            "timeLimit": 0,
+            "maxAttempts": 0,
+            "showHints": true,
+            "hintCost": 0,
+            "xpBase": 100,
+            "xpBonus": {
+              "noHint": 20,
+              "fastComplete": 30,
+              "firstTry": 50
+            }
+          },
+          "question": {
+            "type": "single_choice",
+            "question": "Zeabur 默认计费是？",
+            "options": [
+              {
+                "key": "A",
+                "text": "固定月费"
+              },
+              {
+                "key": "B",
+                "text": "按量计费"
+              },
+              {
+                "key": "C",
+                "text": "终身买断"
+              },
+              {
+                "key": "D",
+                "text": "只收带宽费"
+              }
+            ],
+            "correctAnswer": "B",
+            "explanation": "按资源使用计费。"
+          }
+        },
+        {
+          "id": 12,
+          "mapIndex": 1,
+          "title": "免费额度",
+          "description": "了解试用额度",
+          "difficulty": "easy",
+          "config": {
+            "timeLimit": 0,
+            "maxAttempts": 0,
+            "showHints": true,
+            "hintCost": 0,
+            "xpBase": 100,
+            "xpBonus": {
+              "noHint": 20,
+              "fastComplete": 30,
+              "firstTry": 50
+            }
+          },
+          "question": {
+            "type": "true_false",
+            "statement": "新账户可能有试用额度，可在控制台查看。",
+            "correctAnswer": true,
+            "explanation": "控制台账单页可查看赠送额度。"
+          }
+        },
+        {
+          "id": 13,
+          "mapIndex": 1,
+          "title": "资源项",
+          "description": "CPU/内存/带宽计费要素",
+          "difficulty": "medium",
+          "config": {
+            "timeLimit": 0,
+            "maxAttempts": 0,
+            "showHints": true,
+            "hintCost": 0,
+            "xpBase": 100,
+            "xpBonus": {
+              "noHint": 20,
+              "fastComplete": 30,
+              "firstTry": 50
+            }
+          },
+          "question": {
+            "type": "single_choice",
+            "question": "下列哪项通常影响计费？",
+            "options": [
+              {
+                "key": "A",
+                "text": "CPU 与内存"
+              },
+              {
+                "key": "B",
+                "text": "代码行数"
+              },
+              {
+                "key": "C",
+                "text": "Git 提交次数"
+              },
+              {
+                "key": "D",
+                "text": "编辑器主题"
+              }
+            ],
+            "correctAnswer": "A",
+            "explanation": "主要按资源规格与运行时长计费。"
+          }
+        },
+        {
+          "id": 14,
+          "mapIndex": 1,
+          "title": "配额超限",
+          "description": "超限处理方式",
+          "difficulty": "medium",
+          "config": {
+            "timeLimit": 0,
+            "maxAttempts": 0,
+            "showHints": true,
+            "hintCost": 0,
+            "xpBase": 100,
+            "xpBonus": {
+              "noHint": 20,
+              "fastComplete": 30,
+              "firstTry": 50
+            }
+          },
+          "question": {
+            "type": "true_false",
+            "statement": "资源超限后服务会被自动扩容且免费。",
+            "correctAnswer": false,
+            "explanation": "超限需升级或调整资源，否则可能限流/失败。"
+          }
+        },
+        {
+          "id": 15,
+          "mapIndex": 1,
+          "title": "带宽与流量",
+          "description": "出站流量计费",
+          "difficulty": "medium",
+          "config": {
+            "timeLimit": 0,
+            "maxAttempts": 0,
+            "showHints": true,
+            "hintCost": 0,
+            "xpBase": 100,
+            "xpBonus": {
+              "noHint": 20,
+              "fastComplete": 30,
+              "firstTry": 50
+            }
+          },
+          "question": {
+            "type": "single_choice",
+            "question": "流量计费主要关注哪一项？",
+            "options": [
+              {
+                "key": "A",
+                "text": "出站流量"
+              },
+              {
+                "key": "B",
+                "text": "本地磁盘 IO"
+              },
+              {
+                "key": "C",
+                "text": "终端行数"
+              },
+              {
+                "key": "D",
+                "text": "Git 分支数"
+              }
+            ],
+            "correctAnswer": "A",
+            "explanation": "大部分云计费以出站流量为主。"
+          }
+        },
+        {
+          "id": 16,
+          "mapIndex": 1,
+          "title": "实例休眠",
+          "description": "空闲实例策略",
+          "difficulty": "hard",
+          "config": {
+            "timeLimit": 0,
+            "maxAttempts": 0,
+            "showHints": true,
+            "hintCost": 0,
+            "xpBase": 100,
+            "xpBonus": {
+              "noHint": 20,
+              "fastComplete": 30,
+              "firstTry": 50
+            }
+          },
+          "question": {
+            "type": "true_false",
+            "statement": "无流量时服务会按策略休眠以节省费用。",
+            "correctAnswer": true,
+            "explanation": "自动休眠/冷启动策略可降低成本。"
+          }
+        },
+        {
+          "id": 17,
+          "mapIndex": 1,
+          "title": "计费可见性",
+          "description": "账单与用量查看",
+          "difficulty": "hard",
+          "config": {
+            "timeLimit": 0,
+            "maxAttempts": 0,
+            "showHints": true,
+            "hintCost": 0,
+            "xpBase": 100,
+            "xpBonus": {
+              "noHint": 20,
+              "fastComplete": 30,
+              "firstTry": 50
+            }
+          },
+          "question": {
+            "type": "fill_blank",
+            "question": "账单与用量可在控制台的 ____ 页面查看。",
+            "correctAnswers": [
+              "Billing",
+              "账单"
+            ],
+            "explanation": "控制台账单/用量页。"
+          }
+        },
+        {
+          "id": 18,
+          "mapIndex": 1,
+          "title": "成本优化",
+          "description": "降低费用的方法",
+          "difficulty": "hard",
+          "config": {
+            "timeLimit": 0,
+            "maxAttempts": 0,
+            "showHints": true,
+            "hintCost": 0,
+            "xpBase": 100,
+            "xpBonus": {
+              "noHint": 20,
+              "fastComplete": 30,
+              "firstTry": 50
+            }
+          },
+          "question": {
+            "type": "single_choice",
+            "question": "下列哪项有助于降低成本？",
+            "options": [
+              {
+                "key": "A",
+                "text": "降低实例规格"
+              },
+              {
+                "key": "B",
+                "text": "增加日志级别为 DEBUG"
+              },
+              {
+                "key": "C",
+                "text": "关闭休眠功能"
+              },
+              {
+                "key": "D",
+                "text": "频繁重启服务"
+              }
+            ],
+            "correctAnswer": "A",
+            "explanation": "减小规格或开启休眠可省成本。"
+          }
+        },
+        {
+          "id": 19,
+          "mapIndex": 1,
+          "title": "跨区域计费",
+          "description": "多 Region 考量",
+          "difficulty": "expert",
+          "config": {
+            "timeLimit": 0,
+            "maxAttempts": 0,
+            "showHints": true,
+            "hintCost": 0,
+            "xpBase": 100,
+            "xpBonus": {
+              "noHint": 20,
+              "fastComplete": 30,
+              "firstTry": 50
+            }
+          },
+          "question": {
+            "type": "true_false",
+            "statement": "跨 Region 数据传输可能产生额外费用。",
+            "correctAnswer": true,
+            "explanation": "跨区流量需额外计费。"
+          }
+        },
+        {
+          "id": 20,
+          "mapIndex": 1,
+          "title": "综合测验",
+          "description": "计费策略理解",
+          "difficulty": "expert",
+          "config": {
+            "timeLimit": 0,
+            "maxAttempts": 0,
+            "showHints": true,
+            "hintCost": 0,
+            "xpBase": 100,
+            "xpBonus": {
+              "noHint": 20,
+              "fastComplete": 30,
+              "firstTry": 50
+            }
+          },
+          "question": {
+            "type": "single_choice",
+            "question": "若要降低成本，下列组合最合理？",
+            "options": [
+              {
+                "key": "A",
+                "text": "减小规格+允许休眠"
+              },
+              {
+                "key": "B",
+                "text": "放大规格+关闭休眠"
+              },
+              {
+                "key": "C",
+                "text": "增加日志量"
+              },
+              {
+                "key": "D",
+                "text": "强制常驻高负载"
+              }
+            ],
+            "correctAnswer": "A",
+            "explanation": "减小规格并开启休眠可控成本。"
+          }
+        },
+        {
+          "id": 21,
+          "mapIndex": 2,
+          "title": "Git Service",
+          "description": "从仓库一键部署",
+          "difficulty": "easy",
+          "config": {
+            "timeLimit": 0,
+            "maxAttempts": 0,
+            "showHints": true,
+            "hintCost": 0,
+            "xpBase": 100,
+            "xpBonus": {
+              "noHint": 20,
+              "fastComplete": 30,
+              "firstTry": 50
+            }
+          },
+          "question": {
+            "type": "fill_blank",
+            "question": "Zeabur 的 ____ Service 支持从 GitHub/GitLab 部署。",
+            "correctAnswers": [
+              "Git"
+            ],
+            "explanation": "Git Service 连接仓库自动部署。"
+          }
+        },
+        {
+          "id": 22,
+          "mapIndex": 2,
+          "title": "Deploy Button",
+          "description": "README 一键部署",
+          "difficulty": "easy",
+          "config": {
+            "timeLimit": 0,
+            "maxAttempts": 0,
+            "showHints": true,
+            "hintCost": 0,
+            "xpBase": 100,
+            "xpBonus": {
+              "noHint": 20,
+              "fastComplete": 30,
+              "firstTry": 50
+            }
+          },
+          "question": {
+            "type": "single_choice",
+            "question": "在 README 添加 Deploy to Zeabur 按钮需要提供什么链接？",
+            "options": [
+              {
+                "key": "A",
+                "text": "代码 zip"
+              },
+              {
+                "key": "B",
+                "text": "Zeabur Deploy 链接"
+              },
+              {
+                "key": "C",
+                "text": "数据库导出"
+              },
+              {
+                "key": "D",
+                "text": "本地路径"
+              }
+            ],
+            "correctAnswer": "B",
+            "explanation": "按钮指向 Zeabur 的部署链接。"
+          }
+        },
+        {
+          "id": 23,
+          "mapIndex": 2,
+          "title": "Docker Image",
+          "description": "自带镜像部署",
+          "difficulty": "medium",
+          "config": {
+            "timeLimit": 0,
+            "maxAttempts": 0,
+            "showHints": true,
+            "hintCost": 0,
+            "xpBase": 100,
+            "xpBonus": {
+              "noHint": 20,
+              "fastComplete": 30,
+              "firstTry": 50
+            }
+          },
+          "question": {
+            "type": "true_false",
+            "statement": "Zeabur 支持直接使用 Docker 镜像部署。",
+            "correctAnswer": true,
+            "explanation": "可选镜像作为运行基础。"
+          }
+        },
+        {
+          "id": 24,
+          "mapIndex": 2,
+          "title": "预构建模板",
+          "description": "模板快速启动",
+          "difficulty": "medium",
+          "config": {
+            "timeLimit": 0,
+            "maxAttempts": 0,
+            "showHints": true,
+            "hintCost": 0,
+            "xpBase": 100,
+            "xpBonus": {
+              "noHint": 20,
+              "fastComplete": 30,
+              "firstTry": 50
+            }
+          },
+          "question": {
+            "type": "single_choice",
+            "question": "想快速启动 PostgreSQL，应该选择？",
+            "options": [
+              {
+                "key": "A",
+                "text": "预构建模板"
+              },
+              {
+                "key": "B",
+                "text": "手写 Dockerfile"
+              },
+              {
+                "key": "C",
+                "text": "本地 SQLite"
+              },
+              {
+                "key": "D",
+                "text": "导入 CSV"
+              }
+            ],
+            "correctAnswer": "A",
+            "explanation": "预构建模板提供常用数据库。"
+          }
+        },
+        {
+          "id": 25,
+          "mapIndex": 2,
+          "title": "自动识别",
+          "description": "框架检测",
+          "difficulty": "medium",
+          "config": {
+            "timeLimit": 0,
+            "maxAttempts": 0,
+            "showHints": true,
+            "hintCost": 0,
+            "xpBase": 100,
+            "xpBonus": {
+              "noHint": 20,
+              "fastComplete": 30,
+              "firstTry": 50
+            }
+          },
+          "question": {
+            "type": "true_false",
+            "statement": "Zeabur 会自动识别常见框架并设置构建命令。",
+            "correctAnswer": true,
+            "explanation": "内置检测多语言框架。"
+          }
+        },
+        {
+          "id": 26,
+          "mapIndex": 2,
+          "title": "多服务项目",
+          "description": "Monorepo 部署",
+          "difficulty": "hard",
+          "config": {
+            "timeLimit": 0,
+            "maxAttempts": 0,
+            "showHints": true,
+            "hintCost": 0,
+            "xpBase": 100,
+            "xpBonus": {
+              "noHint": 20,
+              "fastComplete": 30,
+              "firstTry": 50
+            }
+          },
+          "question": {
+            "type": "single_choice",
+            "question": "Monorepo 中选择部署子目录可通过？",
+            "options": [
+              {
+                "key": "A",
+                "text": "在控制台选子目录"
+              },
+              {
+                "key": "B",
+                "text": "删除其他目录"
+              },
+              {
+                "key": "C",
+                "text": "压缩上传"
+              },
+              {
+                "key": "D",
+                "text": "不支持 monorepo"
+              }
+            ],
+            "correctAnswer": "A",
+            "explanation": "控制台可指定子目录。"
+          }
+        },
+        {
+          "id": 27,
+          "mapIndex": 2,
+          "title": "构建缓存",
+          "description": "加速二次构建",
+          "difficulty": "hard",
+          "config": {
+            "timeLimit": 0,
+            "maxAttempts": 0,
+            "showHints": true,
+            "hintCost": 0,
+            "xpBase": 100,
+            "xpBonus": {
+              "noHint": 20,
+              "fastComplete": 30,
+              "firstTry": 50
+            }
+          },
+          "question": {
+            "type": "true_false",
+            "statement": "Zeabur 支持构建缓存以加速重复部署。",
+            "correctAnswer": true,
+            "explanation": "缓存依赖缩短构建时间。"
+          }
+        },
+        {
+          "id": 28,
+          "mapIndex": 2,
+          "title": "私有仓库",
+          "description": "授权访问私有 Git",
+          "difficulty": "hard",
+          "config": {
+            "timeLimit": 0,
+            "maxAttempts": 0,
+            "showHints": true,
+            "hintCost": 0,
+            "xpBase": 100,
+            "xpBonus": {
+              "noHint": 20,
+              "fastComplete": 30,
+              "firstTry": 50
+            }
+          },
+          "question": {
+            "type": "single_choice",
+            "question": "部署私有仓库需确保？",
+            "options": [
+              {
+                "key": "A",
+                "text": "仓库公开"
+              },
+              {
+                "key": "B",
+                "text": "配置访问令牌/授权"
+              },
+              {
+                "key": "C",
+                "text": "删除 .git"
+              },
+              {
+                "key": "D",
+                "text": "改名 master"
+              }
+            ],
+            "correctAnswer": "B",
+            "explanation": "需授权访问私库。"
+          }
+        },
+        {
+          "id": 29,
+          "mapIndex": 2,
+          "title": "自定义流程",
+          "description": "自定义构建命令",
+          "difficulty": "expert",
+          "config": {
+            "timeLimit": 0,
+            "maxAttempts": 0,
+            "showHints": true,
+            "hintCost": 0,
+            "xpBase": 100,
+            "xpBonus": {
+              "noHint": 20,
+              "fastComplete": 30,
+              "firstTry": 50
+            }
+          },
+          "question": {
+            "type": "fill_blank",
+            "question": "自定义构建命令可在控制台的 ____ 里配置。",
+            "correctAnswers": [
+              "Build & Deploy",
+              "构建与部署",
+              "构建设置"
+            ],
+            "explanation": "构建设置中可改命令。"
+          }
+        },
+        {
+          "id": 30,
+          "mapIndex": 2,
+          "title": "综合测验",
+          "description": "部署入口汇总",
+          "difficulty": "expert",
+          "config": {
+            "timeLimit": 0,
+            "maxAttempts": 0,
+            "showHints": true,
+            "hintCost": 0,
+            "xpBase": 100,
+            "xpBonus": {
+              "noHint": 20,
+              "fastComplete": 30,
+              "firstTry": 50
+            }
+          },
+          "question": {
+            "type": "single_choice",
+            "question": "最快让用户一键部署你的开源项目的方式是？",
+            "options": [
+              {
+                "key": "A",
+                "text": "上传 zip"
+              },
+              {
+                "key": "B",
+                "text": "在 README 添加 Deploy to Zeabur 按钮"
+              },
+              {
+                "key": "C",
+                "text": "手写脚本邮件给用户"
+              },
+              {
+                "key": "D",
+                "text": "提供本地 exe"
+              }
+            ],
+            "correctAnswer": "B",
+            "explanation": "Deploy Button 是最便捷入口。"
+          }
+        },
+        {
+          "id": 31,
+          "mapIndex": 3,
+          "title": "构建命令",
+          "description": "默认构建命令了解",
+          "difficulty": "easy",
+          "config": {
+            "timeLimit": 0,
+            "maxAttempts": 0,
+            "showHints": true,
+            "hintCost": 0,
+            "xpBase": 100,
+            "xpBonus": {
+              "noHint": 20,
+              "fastComplete": 30,
+              "firstTry": 50
+            }
+          },
+          "question": {
+            "type": "true_false",
+            "statement": "Zeabur 会根据框架自动填入构建命令，可手动修改。",
+            "correctAnswer": true,
+            "explanation": "自动识别但可覆盖。"
+          }
+        },
+        {
+          "id": 32,
+          "mapIndex": 3,
+          "title": "启动命令",
+          "description": "运行命令配置",
+          "difficulty": "easy",
+          "config": {
+            "timeLimit": 0,
+            "maxAttempts": 0,
+            "showHints": true,
+            "hintCost": 0,
+            "xpBase": 100,
+            "xpBonus": {
+              "noHint": 20,
+              "fastComplete": 30,
+              "firstTry": 50
+            }
+          },
+          "question": {
+            "type": "single_choice",
+            "question": "Node.js 服务启动命令常见设置为？",
+            "options": [
+              {
+                "key": "A",
+                "text": "npm start"
+              },
+              {
+                "key": "B",
+                "text": "python app.py"
+              },
+              {
+                "key": "C",
+                "text": "go test ./..."
+              },
+              {
+                "key": "D",
+                "text": "ls"
+              }
+            ],
+            "correctAnswer": "A",
+            "explanation": "常用 npm start/pm2 等。"
+          }
+        },
+        {
+          "id": 33,
+          "mapIndex": 3,
+          "title": "环境变量注入",
+          "description": "构建时与运行时变量",
+          "difficulty": "medium",
+          "config": {
+            "timeLimit": 0,
+            "maxAttempts": 0,
+            "showHints": true,
+            "hintCost": 0,
+            "xpBase": 100,
+            "xpBonus": {
+              "noHint": 20,
+              "fastComplete": 30,
+              "firstTry": 50
+            }
+          },
+          "question": {
+            "type": "true_false",
+            "statement": "Zeabur 支持在构建时注入环境变量。",
+            "correctAnswer": true,
+            "explanation": "可区分构建/运行时变量。"
+          }
+        },
+        {
+          "id": 34,
+          "mapIndex": 3,
+          "title": "运行时端口",
+          "description": "PORT 绑定",
+          "difficulty": "medium",
+          "config": {
+            "timeLimit": 0,
+            "maxAttempts": 0,
+            "showHints": true,
+            "hintCost": 0,
+            "xpBase": 100,
+            "xpBonus": {
+              "noHint": 20,
+              "fastComplete": 30,
+              "firstTry": 50
+            }
+          },
+          "question": {
+            "type": "single_choice",
+            "question": "服务应监听的端口是？",
+            "options": [
+              {
+                "key": "A",
+                "text": "固定 80"
+              },
+              {
+                "key": "B",
+                "text": "读取环境变量 PORT"
+              },
+              {
+                "key": "C",
+                "text": "随机 1234"
+              },
+              {
+                "key": "D",
+                "text": "随意"
+              }
+            ],
+            "correctAnswer": "B",
+            "explanation": "Zeabur 通过 PORT 环境变量传递端口。"
+          }
+        },
+        {
+          "id": 35,
+          "mapIndex": 3,
+          "title": "静态站点",
+          "description": "静态产物输出目录",
+          "difficulty": "medium",
+          "config": {
+            "timeLimit": 0,
+            "maxAttempts": 0,
+            "showHints": true,
+            "hintCost": 0,
+            "xpBase": 100,
+            "xpBonus": {
+              "noHint": 20,
+              "fastComplete": 30,
+              "firstTry": 50
+            }
+          },
+          "question": {
+            "type": "fill_blank",
+            "question": "静态站需设置输出目录，例如 Next.js 默认 ____。",
+            "correctAnswers": [
+              ".next",
+              "out"
+            ],
+            "explanation": "需指明静态产物目录。"
+          }
+        },
+        {
+          "id": 36,
+          "mapIndex": 3,
+          "title": "多进程",
+          "description": "进程模型",
+          "difficulty": "hard",
+          "config": {
+            "timeLimit": 0,
+            "maxAttempts": 0,
+            "showHints": true,
+            "hintCost": 0,
+            "xpBase": 100,
+            "xpBonus": {
+              "noHint": 20,
+              "fastComplete": 30,
+              "firstTry": 50
+            }
+          },
+          "question": {
+            "type": "true_false",
+            "statement": "在同一实例内启动多个监听同端口的进程是推荐做法。",
+            "correctAnswer": false,
+            "explanation": "应单进程监听 PORT，水平扩容用实例数。"
+          }
+        },
+        {
+          "id": 37,
+          "mapIndex": 3,
+          "title": "依赖缓存",
+          "description": "提升构建速度",
+          "difficulty": "hard",
+          "config": {
+            "timeLimit": 0,
+            "maxAttempts": 0,
+            "showHints": true,
+            "hintCost": 0,
+            "xpBase": 100,
+            "xpBonus": {
+              "noHint": 20,
+              "fastComplete": 30,
+              "firstTry": 50
+            }
+          },
+          "question": {
+            "type": "single_choice",
+            "question": "想加速 Node 构建，可利用？",
+            "options": [
+              {
+                "key": "A",
+                "text": "node_modules 缓存"
+              },
+              {
+                "key": "B",
+                "text": "删除 lockfile"
+              },
+              {
+                "key": "C",
+                "text": "改用 svn"
+              },
+              {
+                "key": "D",
+                "text": "关闭缓存"
+              }
+            ],
+            "correctAnswer": "A",
+            "explanation": "缓存依赖可减少安装时间。"
+          }
+        },
+        {
+          "id": 38,
+          "mapIndex": 3,
+          "title": "自定义 Dockerfile",
+          "description": "高级控制",
+          "difficulty": "hard",
+          "config": {
+            "timeLimit": 0,
+            "maxAttempts": 0,
+            "showHints": true,
+            "hintCost": 0,
+            "xpBase": 100,
+            "xpBonus": {
+              "noHint": 20,
+              "fastComplete": 30,
+              "firstTry": 50
+            }
+          },
+          "question": {
+            "type": "single_choice",
+            "question": "若需完全控制运行时，应？",
+            "options": [
+              {
+                "key": "A",
+                "text": "使用自定义 Dockerfile"
+              },
+              {
+                "key": "B",
+                "text": "删除 package.json"
+              },
+              {
+                "key": "C",
+                "text": "改为本地运行"
+              },
+              {
+                "key": "D",
+                "text": "关闭 CI/CD"
+              }
+            ],
+            "correctAnswer": "A",
+            "explanation": "Dockerfile 让你控制基础镜像与依赖。"
+          }
+        },
+        {
+          "id": 39,
+          "mapIndex": 3,
+          "title": "启动探针",
+          "description": "健康检查",
+          "difficulty": "expert",
+          "config": {
+            "timeLimit": 0,
+            "maxAttempts": 0,
+            "showHints": true,
+            "hintCost": 0,
+            "xpBase": 100,
+            "xpBonus": {
+              "noHint": 20,
+              "fastComplete": 30,
+              "firstTry": 50
+            }
+          },
+          "question": {
+            "type": "true_false",
+            "statement": "健康检查失败会导致流量不被路由到该实例。",
+            "correctAnswer": true,
+            "explanation": "探针失败会被摘除。"
+          }
+        },
+        {
+          "id": 40,
+          "mapIndex": 3,
+          "title": "综合测验",
+          "description": "构建/运行时要点",
+          "difficulty": "expert",
+          "config": {
+            "timeLimit": 0,
+            "maxAttempts": 0,
+            "showHints": true,
+            "hintCost": 0,
+            "xpBase": 100,
+            "xpBonus": {
+              "noHint": 20,
+              "fastComplete": 30,
+              "firstTry": 50
+            }
+          },
+          "question": {
+            "type": "single_choice",
+            "question": "避免端口冲突的最佳做法是？",
+            "options": [
+              {
+                "key": "A",
+                "text": "硬编码 3000"
+              },
+              {
+                "key": "B",
+                "text": "读取 PORT 环境变量"
+              },
+              {
+                "key": "C",
+                "text": "监听 0"
+              },
+              {
+                "key": "D",
+                "text": "随机监听"
+              }
+            ],
+            "correctAnswer": "B",
+            "explanation": "统一监听 PORT。"
+          }
+        },
+        {
+          "id": 41,
+          "mapIndex": 4,
+          "title": "环境变量入口",
+          "description": "控制台配置",
+          "difficulty": "easy",
+          "config": {
+            "timeLimit": 0,
+            "maxAttempts": 0,
+            "showHints": true,
+            "hintCost": 0,
+            "xpBase": 100,
+            "xpBonus": {
+              "noHint": 20,
+              "fastComplete": 30,
+              "firstTry": 50
+            }
+          },
+          "question": {
+            "type": "fill_blank",
+            "question": "敏感信息应放入 ____ 变量。",
+            "correctAnswers": [
+              "环境",
+              "环境变量",
+              "Environment Variables"
+            ],
+            "explanation": "在 Settings/Env 中配置。"
+          }
+        },
+        {
+          "id": 42,
+          "mapIndex": 4,
+          "title": "密钥管理",
+          "description": "避免代码泄露",
+          "difficulty": "easy",
+          "config": {
+            "timeLimit": 0,
+            "maxAttempts": 0,
+            "showHints": true,
+            "hintCost": 0,
+            "xpBase": 100,
+            "xpBonus": {
+              "noHint": 20,
+              "fastComplete": 30,
+              "firstTry": 50
+            }
+          },
+          "question": {
+            "type": "true_false",
+            "statement": "API Key 应写入代码库方便部署。",
+            "correctAnswer": false,
+            "explanation": "应通过环境变量注入。"
+          }
+        },
+        {
+          "id": 43,
+          "mapIndex": 4,
+          "title": "构建时变量",
+          "description": "Build-time vs Run-time",
+          "difficulty": "medium",
+          "config": {
+            "timeLimit": 0,
+            "maxAttempts": 0,
+            "showHints": true,
+            "hintCost": 0,
+            "xpBase": 100,
+            "xpBonus": {
+              "noHint": 20,
+              "fastComplete": 30,
+              "firstTry": 50
+            }
+          },
+          "question": {
+            "type": "single_choice",
+            "question": "前端静态站需要在构建时注入变量，应该放在哪类变量？",
+            "options": [
+              {
+                "key": "A",
+                "text": "运行时变量"
+              },
+              {
+                "key": "B",
+                "text": "构建时变量"
+              },
+              {
+                "key": "C",
+                "text": "日志"
+              },
+              {
+                "key": "D",
+                "text": "配置文件明文"
+              }
+            ],
+            "correctAnswer": "B",
+            "explanation": "静态资源在构建阶段固化变量。"
+          }
+        },
+        {
+          "id": 44,
+          "mapIndex": 4,
+          "title": "多环境配置",
+          "description": "dev/stage/prod",
+          "difficulty": "medium",
+          "config": {
+            "timeLimit": 0,
+            "maxAttempts": 0,
+            "showHints": true,
+            "hintCost": 0,
+            "xpBase": 100,
+            "xpBonus": {
+              "noHint": 20,
+              "fastComplete": 30,
+              "firstTry": 50
+            }
+          },
+          "question": {
+            "type": "true_false",
+            "statement": "同一项目可以为不同分支配置不同环境变量。",
+            "correctAnswer": true,
+            "explanation": "可按环境/分支管理变量。"
+          }
+        },
+        {
+          "id": 45,
+          "mapIndex": 4,
+          "title": "Secret 轮换",
+          "description": "密钥更新",
+          "difficulty": "medium",
+          "config": {
+            "timeLimit": 0,
+            "maxAttempts": 0,
+            "showHints": true,
+            "hintCost": 0,
+            "xpBase": 100,
+            "xpBonus": {
+              "noHint": 20,
+              "fastComplete": 30,
+              "firstTry": 50
+            }
+          },
+          "question": {
+            "type": "single_choice",
+            "question": "更新数据库密码后，服务需要？",
+            "options": [
+              {
+                "key": "A",
+                "text": "重启/重新部署"
+              },
+              {
+                "key": "B",
+                "text": "无需动作"
+              },
+              {
+                "key": "C",
+                "text": "删除代码"
+              },
+              {
+                "key": "D",
+                "text": "改名仓库"
+              }
+            ],
+            "correctAnswer": "A",
+            "explanation": "更新变量后需重启生效。"
+          }
+        },
+        {
+          "id": 46,
+          "mapIndex": 4,
+          "title": "变量覆盖",
+          "description": "优先级",
+          "difficulty": "hard",
+          "config": {
+            "timeLimit": 0,
+            "maxAttempts": 0,
+            "showHints": true,
+            "hintCost": 0,
+            "xpBase": 100,
+            "xpBonus": {
+              "noHint": 20,
+              "fastComplete": 30,
+              "firstTry": 50
+            }
+          },
+          "question": {
+            "type": "true_false",
+            "statement": "同名变量后写的会覆盖先写的。",
+            "correctAnswer": true,
+            "explanation": "后者覆盖前者。"
+          }
+        },
+        {
+          "id": 47,
+          "mapIndex": 4,
+          "title": "注入方式",
+          "description": "ENV 与文件",
+          "difficulty": "hard",
+          "config": {
+            "timeLimit": 0,
+            "maxAttempts": 0,
+            "showHints": true,
+            "hintCost": 0,
+            "xpBase": 100,
+            "xpBonus": {
+              "noHint": 20,
+              "fastComplete": 30,
+              "firstTry": 50
+            }
+          },
+          "question": {
+            "type": "single_choice",
+            "question": "想以文件形式提供凭证，最佳方式是？",
+            "options": [
+              {
+                "key": "A",
+                "text": "Base64 存入变量并解码为文件"
+              },
+              {
+                "key": "B",
+                "text": "明文上传代码库"
+              },
+              {
+                "key": "C",
+                "text": "截图保存"
+              },
+              {
+                "key": "D",
+                "text": "发邮件"
+              }
+            ],
+            "correctAnswer": "A",
+            "explanation": "可使用变量保存 Base64，在启动时写入文件。"
+          }
+        },
+        {
+          "id": 48,
+          "mapIndex": 4,
+          "title": "配置版本",
+          "description": "变更审计",
+          "difficulty": "hard",
+          "config": {
+            "timeLimit": 0,
+            "maxAttempts": 0,
+            "showHints": true,
+            "hintCost": 0,
+            "xpBase": 100,
+            "xpBonus": {
+              "noHint": 20,
+              "fastComplete": 30,
+              "firstTry": 50
+            }
+          },
+          "question": {
+            "type": "true_false",
+            "statement": "环境变量变更后无法追踪历史。",
+            "correctAnswer": false,
+            "explanation": "可在控制台查看变更记录。"
+          }
+        },
+        {
+          "id": 49,
+          "mapIndex": 4,
+          "title": "最佳实践",
+          "description": "最小权限原则",
+          "difficulty": "expert",
+          "config": {
+            "timeLimit": 0,
+            "maxAttempts": 0,
+            "showHints": true,
+            "hintCost": 0,
+            "xpBase": 100,
+            "xpBonus": {
+              "noHint": 20,
+              "fastComplete": 30,
+              "firstTry": 50
+            }
+          },
+          "question": {
+            "type": "single_choice",
+            "question": "遵循最小权限应如何处理 API Key？",
+            "options": [
+              {
+                "key": "A",
+                "text": "复用同一个 key"
+              },
+              {
+                "key": "B",
+                "text": "按环境分开、定期轮换"
+              },
+              {
+                "key": "C",
+                "text": "公开共享"
+              },
+              {
+                "key": "D",
+                "text": "写在 README"
+              }
+            ],
+            "correctAnswer": "B",
+            "explanation": "分环境、轮换、最小权限。"
+          }
+        },
+        {
+          "id": 50,
+          "mapIndex": 4,
+          "title": "综合测验",
+          "description": "变量与密钥总结",
+          "difficulty": "expert",
+          "config": {
+            "timeLimit": 0,
+            "maxAttempts": 0,
+            "showHints": true,
+            "hintCost": 0,
+            "xpBase": 100,
+            "xpBonus": {
+              "noHint": 20,
+              "fastComplete": 30,
+              "firstTry": 50
+            }
+          },
+          "question": {
+            "type": "single_choice",
+            "question": "前端构建时需要的变量应该？",
+            "options": [
+              {
+                "key": "A",
+                "text": "放在构建时变量"
+              },
+              {
+                "key": "B",
+                "text": "运行时再传"
+              },
+              {
+                "key": "C",
+                "text": "硬编码"
+              },
+              {
+                "key": "D",
+                "text": "用截图"
+              }
+            ],
+            "correctAnswer": "A",
+            "explanation": "前端静态资源需构建时注入。"
+          }
+        },
+        {
+          "id": 51,
+          "mapIndex": 5,
+          "title": "默认域名",
+          "description": "平台分配域名",
+          "difficulty": "easy",
+          "config": {
+            "timeLimit": 0,
+            "maxAttempts": 0,
+            "showHints": true,
+            "hintCost": 0,
+            "xpBase": 100,
+            "xpBonus": {
+              "noHint": 20,
+              "fastComplete": 30,
+              "firstTry": 50
+            }
+          },
+          "question": {
+            "type": "true_false",
+            "statement": "每个服务创建后会有一个默认子域名。",
+            "correctAnswer": true,
+            "explanation": "自动分配二级域名。"
+          }
+        },
+        {
+          "id": 52,
+          "mapIndex": 5,
+          "title": "自定义域名",
+          "description": "绑定自有域名",
+          "difficulty": "easy",
+          "config": {
+            "timeLimit": 0,
+            "maxAttempts": 0,
+            "showHints": true,
+            "hintCost": 0,
+            "xpBase": 100,
+            "xpBonus": {
+              "noHint": 20,
+              "fastComplete": 30,
+              "firstTry": 50
+            }
+          },
+          "question": {
+            "type": "single_choice",
+            "question": "绑定自定义域名需要？",
+            "options": [
+              {
+                "key": "A",
+                "text": "DNS CNAME/A 解析"
+              },
+              {
+                "key": "B",
+                "text": "下载客户端"
+              },
+              {
+                "key": "C",
+                "text": "改代码"
+              },
+              {
+                "key": "D",
+                "text": "关闭 HTTPS"
+              }
+            ],
+            "correctAnswer": "A",
+            "explanation": "通过 DNS 解析绑定。"
+          }
+        },
+        {
+          "id": 53,
+          "mapIndex": 5,
+          "title": "HTTPS",
+          "description": "证书管理",
+          "difficulty": "medium",
+          "config": {
+            "timeLimit": 0,
+            "maxAttempts": 0,
+            "showHints": true,
+            "hintCost": 0,
+            "xpBase": 100,
+            "xpBonus": {
+              "noHint": 20,
+              "fastComplete": 30,
+              "firstTry": 50
+            }
+          },
+          "question": {
+            "type": "true_false",
+            "statement": "绑定域名后 Zeabur 会自动签发证书。",
+            "correctAnswer": true,
+            "explanation": "自动申请/续期证书。"
+          }
+        },
+        {
+          "id": 54,
+          "mapIndex": 5,
+          "title": "路径路由",
+          "description": "多路径配置",
+          "difficulty": "medium",
+          "config": {
+            "timeLimit": 0,
+            "maxAttempts": 0,
+            "showHints": true,
+            "hintCost": 0,
+            "xpBase": 100,
+            "xpBonus": {
+              "noHint": 20,
+              "fastComplete": 30,
+              "firstTry": 50
+            }
+          },
+          "question": {
+            "type": "single_choice",
+            "question": "想将 /api 路由到后端，/ 静态站，应该？",
+            "options": [
+              {
+                "key": "A",
+                "text": "使用路由/反向代理配置"
+              },
+              {
+                "key": "B",
+                "text": "复制代码"
+              },
+              {
+                "key": "C",
+                "text": "改域名"
+              },
+              {
+                "key": "D",
+                "text": "不开服务"
+              }
+            ],
+            "correctAnswer": "A",
+            "explanation": "通过路由规则分流。"
+          }
+        },
+        {
+          "id": 55,
+          "mapIndex": 5,
+          "title": "端口暴露",
+          "description": "限制外部访问",
+          "difficulty": "medium",
+          "config": {
+            "timeLimit": 0,
+            "maxAttempts": 0,
+            "showHints": true,
+            "hintCost": 0,
+            "xpBase": 100,
+            "xpBonus": {
+              "noHint": 20,
+              "fastComplete": 30,
+              "firstTry": 50
+            }
+          },
+          "question": {
+            "type": "true_false",
+            "statement": "内部数据库实例会直接暴露公网端口。",
+            "correctAnswer": false,
+            "explanation": "默认不暴露数据库公网。"
+          }
+        },
+        {
+          "id": 56,
+          "mapIndex": 5,
+          "title": "跨域配置",
+          "description": "CORS 设置",
+          "difficulty": "hard",
+          "config": {
+            "timeLimit": 0,
+            "maxAttempts": 0,
+            "showHints": true,
+            "hintCost": 0,
+            "xpBase": 100,
+            "xpBonus": {
+              "noHint": 20,
+              "fastComplete": 30,
+              "firstTry": 50
+            }
+          },
+          "question": {
+            "type": "single_choice",
+            "question": "前端请求跨域 API 报错应？",
+            "options": [
+              {
+                "key": "A",
+                "text": "配置 CORS 允许源"
+              },
+              {
+                "key": "B",
+                "text": "关闭 HTTPS"
+              },
+              {
+                "key": "C",
+                "text": "换浏览器"
+              },
+              {
+                "key": "D",
+                "text": "删除代码"
+              }
+            ],
+            "correctAnswer": "A",
+            "explanation": "在后端开启 CORS。"
+          }
+        },
+        {
+          "id": 57,
+          "mapIndex": 5,
+          "title": "重定向",
+          "description": "HTTP 重写",
+          "difficulty": "hard",
+          "config": {
+            "timeLimit": 0,
+            "maxAttempts": 0,
+            "showHints": true,
+            "hintCost": 0,
+            "xpBase": 100,
+            "xpBonus": {
+              "noHint": 20,
+              "fastComplete": 30,
+              "firstTry": 50
+            }
+          },
+          "question": {
+            "type": "true_false",
+            "statement": "可以配置 http->https 重定向。",
+            "correctAnswer": true,
+            "explanation": "支持重定向/重写。"
+          }
+        },
+        {
+          "id": 58,
+          "mapIndex": 5,
+          "title": "WAF/防护",
+          "description": "安全防护",
+          "difficulty": "hard",
+          "config": {
+            "timeLimit": 0,
+            "maxAttempts": 0,
+            "showHints": true,
+            "hintCost": 0,
+            "xpBase": 100,
+            "xpBonus": {
+              "noHint": 20,
+              "fastComplete": 30,
+              "firstTry": 50
+            }
+          },
+          "question": {
+            "type": "single_choice",
+            "question": "若担心恶意流量，应？",
+            "options": [
+              {
+                "key": "A",
+                "text": "开启防护或使用外部 WAF/CDN"
+              },
+              {
+                "key": "B",
+                "text": "关站"
+              },
+              {
+                "key": "C",
+                "text": "把端口改成 81"
+              },
+              {
+                "key": "D",
+                "text": "不处理"
+              }
+            ],
+            "correctAnswer": "A",
+            "explanation": "可配合 WAF/CDN 防护。"
+          }
+        },
+        {
+          "id": 59,
+          "mapIndex": 5,
+          "title": "私网互通",
+          "description": "内部服务访问",
+          "difficulty": "expert",
+          "config": {
+            "timeLimit": 0,
+            "maxAttempts": 0,
+            "showHints": true,
+            "hintCost": 0,
+            "xpBase": 100,
+            "xpBonus": {
+              "noHint": 20,
+              "fastComplete": 30,
+              "firstTry": 50
+            }
+          },
+          "question": {
+            "type": "true_false",
+            "statement": "同一项目的服务可在私网互相访问。",
+            "correctAnswer": true,
+            "explanation": "服务间可内网访问。"
+          }
+        },
+        {
+          "id": 60,
+          "mapIndex": 5,
+          "title": "综合测验",
+          "description": "网络配置检查",
+          "difficulty": "expert",
+          "config": {
+            "timeLimit": 0,
+            "maxAttempts": 0,
+            "showHints": true,
+            "hintCost": 0,
+            "xpBase": 100,
+            "xpBonus": {
+              "noHint": 20,
+              "fastComplete": 30,
+              "firstTry": 50
+            }
+          },
+          "question": {
+            "type": "single_choice",
+            "question": "绑定自定义域名正确步骤是？",
+            "options": [
+              {
+                "key": "A",
+                "text": "添加 DNS 记录并等待生效"
+              },
+              {
+                "key": "B",
+                "text": "写在 README"
+              },
+              {
+                "key": "C",
+                "text": "改代码"
+              },
+              {
+                "key": "D",
+                "text": "删除默认域名"
+              }
+            ],
+            "correctAnswer": "A",
+            "explanation": "通过 DNS 解析绑定域名。"
+          }
+        },
+        {
+          "id": 61,
+          "mapIndex": 6,
+          "title": "预构建数据库",
+          "description": "一键添加数据库",
+          "difficulty": "easy",
+          "config": {
+            "timeLimit": 0,
+            "maxAttempts": 0,
+            "showHints": true,
+            "hintCost": 0,
+            "xpBase": 100,
+            "xpBonus": {
+              "noHint": 20,
+              "fastComplete": 30,
+              "firstTry": 50
+            }
+          },
+          "question": {
+            "type": "single_choice",
+            "question": "添加 PostgreSQL 最快捷方式？",
+            "options": [
+              {
+                "key": "A",
+                "text": "选择 Prebuilt PostgreSQL"
+              },
+              {
+                "key": "B",
+                "text": "手动编译"
+              },
+              {
+                "key": "C",
+                "text": "本地 SQLite"
+              },
+              {
+                "key": "D",
+                "text": "用 Excel"
+              }
+            ],
+            "correctAnswer": "A",
+            "explanation": "预构建服务一键可用。"
+          }
+        },
+        {
+          "id": 62,
+          "mapIndex": 6,
+          "title": "连接信息",
+          "description": "获取连接串",
+          "difficulty": "easy",
+          "config": {
+            "timeLimit": 0,
+            "maxAttempts": 0,
+            "showHints": true,
+            "hintCost": 0,
+            "xpBase": 100,
+            "xpBonus": {
+              "noHint": 20,
+              "fastComplete": 30,
+              "firstTry": 50
+            }
+          },
+          "question": {
+            "type": "fill_blank",
+            "question": "数据库连接串可在服务的 ____ 页面查看。",
+            "correctAnswers": [
+              "Overview",
+              "概览"
+            ],
+            "explanation": "概览/连接信息页面。"
+          }
+        },
+        {
+          "id": 63,
+          "mapIndex": 6,
+          "title": "持久化",
+          "description": "数据持久化注意",
+          "difficulty": "medium",
+          "config": {
+            "timeLimit": 0,
+            "maxAttempts": 0,
+            "showHints": true,
+            "hintCost": 0,
+            "xpBase": 100,
+            "xpBonus": {
+              "noHint": 20,
+              "fastComplete": 30,
+              "firstTry": 50
+            }
+          },
+          "question": {
+            "type": "true_false",
+            "statement": "Prebuilt 数据库默认带持久化存储。",
+            "correctAnswer": true,
+            "explanation": "预构建数据库持久化。"
+          }
+        },
+        {
+          "id": 64,
+          "mapIndex": 6,
+          "title": "版本选择",
+          "description": "数据库版本管理",
+          "difficulty": "medium",
+          "config": {
+            "timeLimit": 0,
+            "maxAttempts": 0,
+            "showHints": true,
+            "hintCost": 0,
+            "xpBase": 100,
+            "xpBonus": {
+              "noHint": 20,
+              "fastComplete": 30,
+              "firstTry": 50
+            }
+          },
+          "question": {
+            "type": "single_choice",
+            "question": "需要选择 PostgreSQL 版本，应在何处配置？",
+            "options": [
+              {
+                "key": "A",
+                "text": "创建数据库时选择版本"
+              },
+              {
+                "key": "B",
+                "text": "改 README"
+              },
+              {
+                "key": "C",
+                "text": "改域名"
+              },
+              {
+                "key": "D",
+                "text": "不支持版本选择"
+              }
+            ],
+            "correctAnswer": "A",
+            "explanation": "创建时可选版本。"
+          }
+        },
+        {
+          "id": 65,
+          "mapIndex": 6,
+          "title": "外部访问",
+          "description": "数据库公网暴露",
+          "difficulty": "medium",
+          "config": {
+            "timeLimit": 0,
+            "maxAttempts": 0,
+            "showHints": true,
+            "hintCost": 0,
+            "xpBase": 100,
+            "xpBonus": {
+              "noHint": 20,
+              "fastComplete": 30,
+              "firstTry": 50
+            }
+          },
+          "question": {
+            "type": "true_false",
+            "statement": "数据库默认暴露公网，任何人可连。",
+            "correctAnswer": false,
+            "explanation": "默认不暴露公网，需手动开启。"
+          }
+        },
+        {
+          "id": 66,
+          "mapIndex": 6,
+          "title": "备份策略",
+          "description": "备份/恢复",
+          "difficulty": "hard",
+          "config": {
+            "timeLimit": 0,
+            "maxAttempts": 0,
+            "showHints": true,
+            "hintCost": 0,
+            "xpBase": 100,
+            "xpBonus": {
+              "noHint": 20,
+              "fastComplete": 30,
+              "firstTry": 50
+            }
+          },
+          "question": {
+            "type": "single_choice",
+            "question": "想定期备份，应？",
+            "options": [
+              {
+                "key": "A",
+                "text": "使用导出或备份策略"
+              },
+              {
+                "key": "B",
+                "text": "关闭数据库"
+              },
+              {
+                "key": "C",
+                "text": "复制代码"
+              },
+              {
+                "key": "D",
+                "text": "改用 txt"
+              }
+            ],
+            "correctAnswer": "A",
+            "explanation": "应设置备份或导出。"
+          }
+        },
+        {
+          "id": 67,
+          "mapIndex": 6,
+          "title": "连接池",
+          "description": "提升并发",
+          "difficulty": "hard",
+          "config": {
+            "timeLimit": 0,
+            "maxAttempts": 0,
+            "showHints": true,
+            "hintCost": 0,
+            "xpBase": 100,
+            "xpBonus": {
+              "noHint": 20,
+              "fastComplete": 30,
+              "firstTry": 50
+            }
+          },
+          "question": {
+            "type": "true_false",
+            "statement": "使用连接池可以减少频繁建立连接的开销。",
+            "correctAnswer": true,
+            "explanation": "连接池提升性能。"
+          }
+        },
+        {
+          "id": 68,
+          "mapIndex": 6,
+          "title": "跨服务访问",
+          "description": "私网连库",
+          "difficulty": "hard",
+          "config": {
+            "timeLimit": 0,
+            "maxAttempts": 0,
+            "showHints": true,
+            "hintCost": 0,
+            "xpBase": 100,
+            "xpBonus": {
+              "noHint": 20,
+              "fastComplete": 30,
+              "firstTry": 50
+            }
+          },
+          "question": {
+            "type": "single_choice",
+            "question": "应用访问同项目数据库的最佳方式？",
+            "options": [
+              {
+                "key": "A",
+                "text": "使用私网地址"
+              },
+              {
+                "key": "B",
+                "text": "暴露公网"
+              },
+              {
+                "key": "C",
+                "text": "写死 127.0.0.1"
+              },
+              {
+                "key": "D",
+                "text": "邮件发送数据"
+              }
+            ],
+            "correctAnswer": "A",
+            "explanation": "同项目内部走私网。"
+          }
+        },
+        {
+          "id": 69,
+          "mapIndex": 6,
+          "title": "迁移方案",
+          "description": "从自建迁移",
+          "difficulty": "expert",
+          "config": {
+            "timeLimit": 0,
+            "maxAttempts": 0,
+            "showHints": true,
+            "hintCost": 0,
+            "xpBase": 100,
+            "xpBonus": {
+              "noHint": 20,
+              "fastComplete": 30,
+              "firstTry": 50
+            }
+          },
+          "question": {
+            "type": "true_false",
+            "statement": "迁移时可以先导入数据再切流量。",
+            "correctAnswer": true,
+            "explanation": "先导入数据，再切流量/域名。"
+          }
+        },
+        {
+          "id": 70,
+          "mapIndex": 6,
+          "title": "综合测验",
+          "description": "数据库要点",
+          "difficulty": "expert",
+          "config": {
+            "timeLimit": 0,
+            "maxAttempts": 0,
+            "showHints": true,
+            "hintCost": 0,
+            "xpBase": 100,
+            "xpBonus": {
+              "noHint": 20,
+              "fastComplete": 30,
+              "firstTry": 50
+            }
+          },
+          "question": {
+            "type": "single_choice",
+            "question": "减少数据库暴露风险的做法是？",
+            "options": [
+              {
+                "key": "A",
+                "text": "使用私网并限制公网访问"
+              },
+              {
+                "key": "B",
+                "text": "共享密码"
+              },
+              {
+                "key": "C",
+                "text": "关闭备份"
+              },
+              {
+                "key": "D",
+                "text": "暴露默认端口"
+              }
+            ],
+            "correctAnswer": "A",
+            "explanation": "默认不暴露公网，并限制访问。"
+          }
+        },
+        {
+          "id": 71,
+          "mapIndex": 7,
+          "title": "日志查看",
+          "description": "控制台日志",
+          "difficulty": "easy",
+          "config": {
+            "timeLimit": 0,
+            "maxAttempts": 0,
+            "showHints": true,
+            "hintCost": 0,
+            "xpBase": 100,
+            "xpBonus": {
+              "noHint": 20,
+              "fastComplete": 30,
+              "firstTry": 50
+            }
+          },
+          "question": {
+            "type": "single_choice",
+            "question": "应用日志可以在哪里查看？",
+            "options": [
+              {
+                "key": "A",
+                "text": "控制台日志页"
+              },
+              {
+                "key": "B",
+                "text": "只能下载源码"
+              },
+              {
+                "key": "C",
+                "text": "邮件获取"
+              },
+              {
+                "key": "D",
+                "text": "无法查看"
+              }
+            ],
+            "correctAnswer": "A",
+            "explanation": "控制台可直接看日志。"
+          }
+        },
+        {
+          "id": 72,
+          "mapIndex": 7,
+          "title": "指标面板",
+          "description": "CPU/内存监控",
+          "difficulty": "easy",
+          "config": {
+            "timeLimit": 0,
+            "maxAttempts": 0,
+            "showHints": true,
+            "hintCost": 0,
+            "xpBase": 100,
+            "xpBonus": {
+              "noHint": 20,
+              "fastComplete": 30,
+              "firstTry": 50
+            }
+          },
+          "question": {
+            "type": "true_false",
+            "statement": "Zeabur 提供 CPU/内存等指标监控。",
+            "correctAnswer": true,
+            "explanation": "控制台指标面板可查看。"
+          }
+        },
+        {
+          "id": 73,
+          "mapIndex": 7,
+          "title": "日志级别",
+          "description": "合适的日志策略",
+          "difficulty": "medium",
+          "config": {
+            "timeLimit": 0,
+            "maxAttempts": 0,
+            "showHints": true,
+            "hintCost": 0,
+            "xpBase": 100,
+            "xpBonus": {
+              "noHint": 20,
+              "fastComplete": 30,
+              "firstTry": 50
+            }
+          },
+          "question": {
+            "type": "single_choice",
+            "question": "生产环境推荐的日志级别是？",
+            "options": [
+              {
+                "key": "A",
+                "text": "DEBUG 全开"
+              },
+              {
+                "key": "B",
+                "text": "INFO/ERROR 分级"
+              },
+              {
+                "key": "C",
+                "text": "关闭日志"
+              },
+              {
+                "key": "D",
+                "text": "全部打印 SQL"
+              }
+            ],
+            "correctAnswer": "B",
+            "explanation": "按需 INFO/ERROR，避免大量 DEBUG。"
+          }
+        },
+        {
+          "id": 74,
+          "mapIndex": 7,
+          "title": "日志保留",
+          "description": "日志持久化",
+          "difficulty": "medium",
+          "config": {
+            "timeLimit": 0,
+            "maxAttempts": 0,
+            "showHints": true,
+            "hintCost": 0,
+            "xpBase": 100,
+            "xpBonus": {
+              "noHint": 20,
+              "fastComplete": 30,
+              "firstTry": 50
+            }
+          },
+          "question": {
+            "type": "true_false",
+            "statement": "日志会永久保存，不需要额外配置。",
+            "correctAnswer": false,
+            "explanation": "日志有保留策略，需导出或接入外部。"
+          }
+        },
+        {
+          "id": 75,
+          "mapIndex": 7,
+          "title": "异常排查",
+          "description": "利用日志定位错误",
+          "difficulty": "medium",
+          "config": {
+            "timeLimit": 0,
+            "maxAttempts": 0,
+            "showHints": true,
+            "hintCost": 0,
+            "xpBase": 100,
+            "xpBonus": {
+              "noHint": 20,
+              "fastComplete": 30,
+              "firstTry": 50
+            }
+          },
+          "question": {
+            "type": "single_choice",
+            "question": "遇到 500 错误首先应？",
+            "options": [
+              {
+                "key": "A",
+                "text": "查看服务日志"
+              },
+              {
+                "key": "B",
+                "text": "改域名"
+              },
+              {
+                "key": "C",
+                "text": "删除仓库"
+              },
+              {
+                "key": "D",
+                "text": "重装系统"
+              }
+            ],
+            "correctAnswer": "A",
+            "explanation": "先看日志定位原因。"
+          }
+        },
+        {
+          "id": 76,
+          "mapIndex": 7,
+          "title": "外部观测",
+          "description": "接入 APM/外部日志",
+          "difficulty": "hard",
+          "config": {
+            "timeLimit": 0,
+            "maxAttempts": 0,
+            "showHints": true,
+            "hintCost": 0,
+            "xpBase": 100,
+            "xpBonus": {
+              "noHint": 20,
+              "fastComplete": 30,
+              "firstTry": 50
+            }
+          },
+          "question": {
+            "type": "true_false",
+            "statement": "可以通过环境变量注入 APM SDK 所需配置。",
+            "correctAnswer": true,
+            "explanation": "可接入外部监控。"
+          }
+        },
+        {
+          "id": 77,
+          "mapIndex": 7,
+          "title": "告警",
+          "description": "告警设置",
+          "difficulty": "hard",
+          "config": {
+            "timeLimit": 0,
+            "maxAttempts": 0,
+            "showHints": true,
+            "hintCost": 0,
+            "xpBase": 100,
+            "xpBonus": {
+              "noHint": 20,
+              "fastComplete": 30,
+              "firstTry": 50
+            }
+          },
+          "question": {
+            "type": "single_choice",
+            "question": "若希望 CPU 超阈值告警，应？",
+            "options": [
+              {
+                "key": "A",
+                "text": "配置监控/告警规则"
+              },
+              {
+                "key": "B",
+                "text": "忽略"
+              },
+              {
+                "key": "C",
+                "text": "删除服务"
+              },
+              {
+                "key": "D",
+                "text": "改颜色"
+              }
+            ],
+            "correctAnswer": "A",
+            "explanation": "需配置告警规则。"
+          }
+        },
+        {
+          "id": 78,
+          "mapIndex": 7,
+          "title": "日志出口",
+          "description": "导出到外部",
+          "difficulty": "hard",
+          "config": {
+            "timeLimit": 0,
+            "maxAttempts": 0,
+            "showHints": true,
+            "hintCost": 0,
+            "xpBase": 100,
+            "xpBonus": {
+              "noHint": 20,
+              "fastComplete": 30,
+              "firstTry": 50
+            }
+          },
+          "question": {
+            "type": "true_false",
+            "statement": "可以将日志导出到外部存储/日志服务。",
+            "correctAnswer": true,
+            "explanation": "支持外部管道/导出。"
+          }
+        },
+        {
+          "id": 79,
+          "mapIndex": 7,
+          "title": "性能分析",
+          "description": "利用指标定位瓶颈",
+          "difficulty": "expert",
+          "config": {
+            "timeLimit": 0,
+            "maxAttempts": 0,
+            "showHints": true,
+            "hintCost": 0,
+            "xpBase": 100,
+            "xpBonus": {
+              "noHint": 20,
+              "fastComplete": 30,
+              "firstTry": 50
+            }
+          },
+          "question": {
+            "type": "single_choice",
+            "question": "CPU 飙高但 QPS 低，首先应检查？",
+            "options": [
+              {
+                "key": "A",
+                "text": "代码循环/阻塞"
+              },
+              {
+                "key": "B",
+                "text": "域名"
+              },
+              {
+                "key": "C",
+                "text": "换背景"
+              },
+              {
+                "key": "D",
+                "text": "关闭日志"
+              }
+            ],
+            "correctAnswer": "A",
+            "explanation": "看是否代码逻辑/死循环。"
+          }
+        },
+        {
+          "id": 80,
+          "mapIndex": 7,
+          "title": "综合测验",
+          "description": "监控与日志总结",
+          "difficulty": "expert",
+          "config": {
+            "timeLimit": 0,
+            "maxAttempts": 0,
+            "showHints": true,
+            "hintCost": 0,
+            "xpBase": 100,
+            "xpBonus": {
+              "noHint": 20,
+              "fastComplete": 30,
+              "firstTry": 50
+            }
+          },
+          "question": {
+            "type": "single_choice",
+            "question": "高效排障的首要步骤是？",
+            "options": [
+              {
+                "key": "A",
+                "text": "查看日志/指标"
+              },
+              {
+                "key": "B",
+                "text": "先重装"
+              },
+              {
+                "key": "C",
+                "text": "改端口"
+              },
+              {
+                "key": "D",
+                "text": "关机"
+              }
+            ],
+            "correctAnswer": "A",
+            "explanation": "先看日志和指标。"
+          }
+        },
+        {
+          "id": 81,
+          "mapIndex": 8,
+          "title": "HTTPS 默认",
+          "description": "传输安全",
+          "difficulty": "easy",
+          "config": {
+            "timeLimit": 0,
+            "maxAttempts": 0,
+            "showHints": true,
+            "hintCost": 0,
+            "xpBase": 100,
+            "xpBonus": {
+              "noHint": 20,
+              "fastComplete": 30,
+              "firstTry": 50
+            }
+          },
+          "question": {
+            "type": "true_false",
+            "statement": "Zeabur 自定义域名支持自动 HTTPS。",
+            "correctAnswer": true,
+            "explanation": "自动申请证书。"
+          }
+        },
+        {
+          "id": 82,
+          "mapIndex": 8,
+          "title": "环境变量保护",
+          "description": "敏感信息隔离",
+          "difficulty": "easy",
+          "config": {
+            "timeLimit": 0,
+            "maxAttempts": 0,
+            "showHints": true,
+            "hintCost": 0,
+            "xpBase": 100,
+            "xpBonus": {
+              "noHint": 20,
+              "fastComplete": 30,
+              "firstTry": 50
+            }
+          },
+          "question": {
+            "type": "single_choice",
+            "question": "保护密钥最关键的是？",
+            "options": [
+              {
+                "key": "A",
+                "text": "不要写入代码仓库"
+              },
+              {
+                "key": "B",
+                "text": "打印到日志"
+              },
+              {
+                "key": "C",
+                "text": "发朋友圈"
+              },
+              {
+                "key": "D",
+                "text": "硬编码"
+              }
+            ],
+            "correctAnswer": "A",
+            "explanation": "用环境变量存储密钥。"
+          }
+        },
+        {
+          "id": 83,
+          "mapIndex": 8,
+          "title": "数据库访问控制",
+          "description": "限制来源",
+          "difficulty": "medium",
+          "config": {
+            "timeLimit": 0,
+            "maxAttempts": 0,
+            "showHints": true,
+            "hintCost": 0,
+            "xpBase": 100,
+            "xpBonus": {
+              "noHint": 20,
+              "fastComplete": 30,
+              "firstTry": 50
+            }
+          },
+          "question": {
+            "type": "true_false",
+            "statement": "数据库应限制公网访问，优先走私网。",
+            "correctAnswer": true,
+            "explanation": "默认不暴露公网，建议私网访问。"
+          }
+        },
+        {
+          "id": 84,
+          "mapIndex": 8,
+          "title": "最小权限",
+          "description": "凭证与账号",
+          "difficulty": "medium",
+          "config": {
+            "timeLimit": 0,
+            "maxAttempts": 0,
+            "showHints": true,
+            "hintCost": 0,
+            "xpBase": 100,
+            "xpBonus": {
+              "noHint": 20,
+              "fastComplete": 30,
+              "firstTry": 50
+            }
+          },
+          "question": {
+            "type": "single_choice",
+            "question": "下列哪项符合最小权限？",
+            "options": [
+              {
+                "key": "A",
+                "text": "按角色分配权限"
+              },
+              {
+                "key": "B",
+                "text": "所有人用同一 root"
+              },
+              {
+                "key": "C",
+                "text": "公开凭证"
+              },
+              {
+                "key": "D",
+                "text": "日志打印 token"
+              }
+            ],
+            "correctAnswer": "A",
+            "explanation": "按角色/环境分权限。"
+          }
+        },
+        {
+          "id": 85,
+          "mapIndex": 8,
+          "title": "密钥轮换",
+          "description": "定期更新",
+          "difficulty": "medium",
+          "config": {
+            "timeLimit": 0,
+            "maxAttempts": 0,
+            "showHints": true,
+            "hintCost": 0,
+            "xpBase": 100,
+            "xpBonus": {
+              "noHint": 20,
+              "fastComplete": 30,
+              "firstTry": 50
+            }
+          },
+          "question": {
+            "type": "true_false",
+            "statement": "生产密钥长期不换是安全做法。",
+            "correctAnswer": false,
+            "explanation": "应定期轮换。"
+          }
+        },
+        {
+          "id": 86,
+          "mapIndex": 8,
+          "title": "审计日志",
+          "description": "变更追踪",
+          "difficulty": "hard",
+          "config": {
+            "timeLimit": 0,
+            "maxAttempts": 0,
+            "showHints": true,
+            "hintCost": 0,
+            "xpBase": 100,
+            "xpBonus": {
+              "noHint": 20,
+              "fastComplete": 30,
+              "firstTry": 50
+            }
+          },
+          "question": {
+            "type": "single_choice",
+            "question": "想追踪谁改了环境变量，应查看？",
+            "options": [
+              {
+                "key": "A",
+                "text": "审计/变更记录"
+              },
+              {
+                "key": "B",
+                "text": "README"
+              },
+              {
+                "key": "C",
+                "text": "本地日志"
+              },
+              {
+                "key": "D",
+                "text": "无记录"
+              }
+            ],
+            "correctAnswer": "A",
+            "explanation": "控制台提供变更记录。"
+          }
+        },
+        {
+          "id": 87,
+          "mapIndex": 8,
+          "title": "依赖安全",
+          "description": "供应链风险",
+          "difficulty": "hard",
+          "config": {
+            "timeLimit": 0,
+            "maxAttempts": 0,
+            "showHints": true,
+            "hintCost": 0,
+            "xpBase": 100,
+            "xpBonus": {
+              "noHint": 20,
+              "fastComplete": 30,
+              "firstTry": 50
+            }
+          },
+          "question": {
+            "type": "true_false",
+            "statement": "应定期更新依赖并检查漏洞。",
+            "correctAnswer": true,
+            "explanation": "供应链安全需关注依赖漏洞。"
+          }
+        },
+        {
+          "id": 88,
+          "mapIndex": 8,
+          "title": "网络防护",
+          "description": "防护策略",
+          "difficulty": "hard",
+          "config": {
+            "timeLimit": 0,
+            "maxAttempts": 0,
+            "showHints": true,
+            "hintCost": 0,
+            "xpBase": 100,
+            "xpBonus": {
+              "noHint": 20,
+              "fastComplete": 30,
+              "firstTry": 50
+            }
+          },
+          "question": {
+            "type": "single_choice",
+            "question": "抵御恶意流量可以？",
+            "options": [
+              {
+                "key": "A",
+                "text": "接入 WAF/CDN"
+              },
+              {
+                "key": "B",
+                "text": "关闭服务"
+              },
+              {
+                "key": "C",
+                "text": "日志输出密钥"
+              },
+              {
+                "key": "D",
+                "text": "无视"
+              }
+            ],
+            "correctAnswer": "A",
+            "explanation": "可接入 WAF/CDN。"
+          }
+        },
+        {
+          "id": 89,
+          "mapIndex": 8,
+          "title": "合规",
+          "description": "合规要求",
+          "difficulty": "expert",
+          "config": {
+            "timeLimit": 0,
+            "maxAttempts": 0,
+            "showHints": true,
+            "hintCost": 0,
+            "xpBase": 100,
+            "xpBonus": {
+              "noHint": 20,
+              "fastComplete": 30,
+              "firstTry": 50
+            }
+          },
+          "question": {
+            "type": "true_false",
+            "statement": "处理用户数据需关注合规和数据存储位置。",
+            "correctAnswer": true,
+            "explanation": "需遵守合规要求。"
+          }
+        },
+        {
+          "id": 90,
+          "mapIndex": 8,
+          "title": "综合测验",
+          "description": "安全要点",
+          "difficulty": "expert",
+          "config": {
+            "timeLimit": 0,
+            "maxAttempts": 0,
+            "showHints": true,
+            "hintCost": 0,
+            "xpBase": 100,
+            "xpBonus": {
+              "noHint": 20,
+              "fastComplete": 30,
+              "firstTry": 50
+            }
+          },
+          "question": {
+            "type": "single_choice",
+            "question": "保护数据库的正确组合？",
+            "options": [
+              {
+                "key": "A",
+                "text": "私网访问+最小权限+定期轮换"
+              },
+              {
+                "key": "B",
+                "text": "公开密码"
+              },
+              {
+                "key": "C",
+                "text": "硬编码密钥"
+              },
+              {
+                "key": "D",
+                "text": "关闭日志"
+              }
+            ],
+            "correctAnswer": "A",
+            "explanation": "最小权限、私网访问、轮换密钥。"
+          }
+        },
+        {
+          "id": 91,
+          "mapIndex": 9,
+          "title": "发布管理",
+          "description": "版本发布",
+          "difficulty": "easy",
+          "config": {
+            "timeLimit": 0,
+            "maxAttempts": 0,
+            "showHints": true,
+            "hintCost": 0,
+            "xpBase": 100,
+            "xpBonus": {
+              "noHint": 20,
+              "fastComplete": 30,
+              "firstTry": 50
+            }
+          },
+          "question": {
+            "type": "true_false",
+            "statement": "每次部署可视为一次发布，控制台可查看历史。",
+            "correctAnswer": true,
+            "explanation": "发布历史可回溯。"
+          }
+        },
+        {
+          "id": 92,
+          "mapIndex": 9,
+          "title": "回滚",
+          "description": "快速回滚",
+          "difficulty": "easy",
+          "config": {
+            "timeLimit": 0,
+            "maxAttempts": 0,
+            "showHints": true,
+            "hintCost": 0,
+            "xpBase": 100,
+            "xpBonus": {
+              "noHint": 20,
+              "fastComplete": 30,
+              "firstTry": 50
+            }
+          },
+          "question": {
+            "type": "single_choice",
+            "question": "发现线上问题，最快回到上个版本的方法？",
+            "options": [
+              {
+                "key": "A",
+                "text": "使用回滚/重部署上一个版本"
+              },
+              {
+                "key": "B",
+                "text": "删库"
+              },
+              {
+                "key": "C",
+                "text": "改端口"
+              },
+              {
+                "key": "D",
+                "text": "重装系统"
+              }
+            ],
+            "correctAnswer": "A",
+            "explanation": "可回滚到上一个成功版本。"
+          }
+        },
+        {
+          "id": 93,
+          "mapIndex": 9,
+          "title": "冷启动",
+          "description": "休眠唤醒",
+          "difficulty": "medium",
+          "config": {
+            "timeLimit": 0,
+            "maxAttempts": 0,
+            "showHints": true,
+            "hintCost": 0,
+            "xpBase": 100,
+            "xpBonus": {
+              "noHint": 20,
+              "fastComplete": 30,
+              "firstTry": 50
+            }
+          },
+          "question": {
+            "type": "true_false",
+            "statement": "服务休眠后首次访问可能有冷启动。",
+            "correctAnswer": true,
+            "explanation": "休眠节省成本但有冷启动。"
+          }
+        },
+        {
+          "id": 94,
+          "mapIndex": 9,
+          "title": "健康检查失败",
+          "description": "排查指引",
+          "difficulty": "medium",
+          "config": {
+            "timeLimit": 0,
+            "maxAttempts": 0,
+            "showHints": true,
+            "hintCost": 0,
+            "xpBase": 100,
+            "xpBonus": {
+              "noHint": 20,
+              "fastComplete": 30,
+              "firstTry": 50
+            }
+          },
+          "question": {
+            "type": "single_choice",
+            "question": "健康检查失败首先应？",
+            "options": [
+              {
+                "key": "A",
+                "text": "查看日志和探针路径"
+              },
+              {
+                "key": "B",
+                "text": "换主题"
+              },
+              {
+                "key": "C",
+                "text": "改域名"
+              },
+              {
+                "key": "D",
+                "text": "重启电脑"
+              }
+            ],
+            "correctAnswer": "A",
+            "explanation": "先检查探针配置与日志。"
+          }
+        },
+        {
+          "id": 95,
+          "mapIndex": 9,
+          "title": "构建失败",
+          "description": "CI 失败排查",
+          "difficulty": "medium",
+          "config": {
+            "timeLimit": 0,
+            "maxAttempts": 0,
+            "showHints": true,
+            "hintCost": 0,
+            "xpBase": 100,
+            "xpBonus": {
+              "noHint": 20,
+              "fastComplete": 30,
+              "firstTry": 50
+            }
+          },
+          "question": {
+            "type": "true_false",
+            "statement": "构建失败可在日志中查看具体错误并重试。",
+            "correctAnswer": true,
+            "explanation": "查看构建日志定位原因。"
+          }
+        },
+        {
+          "id": 96,
+          "mapIndex": 9,
+          "title": "流量突增",
+          "description": "扩容策略",
+          "difficulty": "hard",
+          "config": {
+            "timeLimit": 0,
+            "maxAttempts": 0,
+            "showHints": true,
+            "hintCost": 0,
+            "xpBase": 100,
+            "xpBonus": {
+              "noHint": 20,
+              "fastComplete": 30,
+              "firstTry": 50
+            }
+          },
+          "question": {
+            "type": "single_choice",
+            "question": "应对流量突增，首选？",
+            "options": [
+              {
+                "key": "A",
+                "text": "增加实例/规格"
+              },
+              {
+                "key": "B",
+                "text": "关站"
+              },
+              {
+                "key": "C",
+                "text": "删代码"
+              },
+              {
+                "key": "D",
+                "text": "重启本地"
+              }
+            ],
+            "correctAnswer": "A",
+            "explanation": "可水平/垂直扩容。"
+          }
+        },
+        {
+          "id": 97,
+          "mapIndex": 9,
+          "title": "延迟升高",
+          "description": "性能排查",
+          "difficulty": "hard",
+          "config": {
+            "timeLimit": 0,
+            "maxAttempts": 0,
+            "showHints": true,
+            "hintCost": 0,
+            "xpBase": 100,
+            "xpBonus": {
+              "noHint": 20,
+              "fastComplete": 30,
+              "firstTry": 50
+            }
+          },
+          "question": {
+            "type": "true_false",
+            "statement": "延迟升高应检查日志、指标以及依赖服务状态。",
+            "correctAnswer": true,
+            "explanation": "综合排查依赖/DB/网络。"
+          }
+        },
+        {
+          "id": 98,
+          "mapIndex": 9,
+          "title": "依赖故障",
+          "description": "外部依赖不可用",
+          "difficulty": "hard",
+          "config": {
+            "timeLimit": 0,
+            "maxAttempts": 0,
+            "showHints": true,
+            "hintCost": 0,
+            "xpBase": 100,
+            "xpBonus": {
+              "noHint": 20,
+              "fastComplete": 30,
+              "firstTry": 50
+            }
+          },
+          "question": {
+            "type": "single_choice",
+            "question": "第三方 API 故障，最佳处理？",
+            "options": [
+              {
+                "key": "A",
+                "text": "增加重试/降级"
+              },
+              {
+                "key": "B",
+                "text": "删除项目"
+              },
+              {
+                "key": "C",
+                "text": "重启电脑"
+              },
+              {
+                "key": "D",
+                "text": "无视"
+              }
+            ],
+            "correctAnswer": "A",
+            "explanation": "增加重试和降级策略。"
+          }
+        },
+        {
+          "id": 99,
+          "mapIndex": 9,
+          "title": "灰度发布",
+          "description": "渐进式发布",
+          "difficulty": "expert",
+          "config": {
+            "timeLimit": 0,
+            "maxAttempts": 0,
+            "showHints": true,
+            "hintCost": 0,
+            "xpBase": 100,
+            "xpBonus": {
+              "noHint": 20,
+              "fastComplete": 30,
+              "firstTry": 50
+            }
+          },
+          "question": {
+            "type": "true_false",
+            "statement": "可以通过多实例配合路由实现灰度。",
+            "correctAnswer": true,
+            "explanation": "多实例+路由可灰度发布。"
+          }
+        },
+        {
+          "id": 100,
+          "mapIndex": 9,
+          "title": "综合测验",
+          "description": "运维总结",
+          "difficulty": "expert",
+          "config": {
+            "timeLimit": 0,
+            "maxAttempts": 0,
+            "showHints": true,
+            "hintCost": 0,
+            "xpBase": 100,
+            "xpBonus": {
+              "noHint": 20,
+              "fastComplete": 30,
+              "firstTry": 50
+            }
+          },
+          "question": {
+            "type": "single_choice",
+            "question": "发现线上问题后正确顺序是？",
+            "options": [
+              {
+                "key": "A",
+                "text": "看日志→回滚/修复→验证"
+              },
+              {
+                "key": "B",
+                "text": "删库"
+              },
+              {
+                "key": "C",
+                "text": "改域名"
+              },
+              {
+                "key": "D",
+                "text": "放弃"
+              }
+            ],
+            "correctAnswer": "A",
+            "explanation": "先日志排查，必要时回滚或修复。"
+          }
+        }
+      ]
+    }
+  ]
+}

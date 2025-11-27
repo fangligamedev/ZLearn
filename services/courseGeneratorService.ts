@@ -18,6 +18,9 @@ export const DEFAULT_CONFIG: CourseGenerationConfig = {
   questionTypes: ['single_choice', 'true_false', 'fill_blank'],
 };
 
+// 单次 LLM 调用最多生成多少关卡，超出则分批多次生成后合并
+const LEVELS_PER_CALL = 10;
+
 const apiKey =
   (typeof import.meta !== 'undefined' && (import.meta as any).env?.VITE_GEMINI_API_KEY) ||
   (typeof process !== 'undefined' && (process as any).env?.API_KEY) ||
@@ -29,7 +32,7 @@ const apiUrl =
   'https://hnd1.aihub.zeabur.ai/gemini';
 
 class CourseGeneratorService {
-  private buildPrompt(content: string, config: CourseGenerationConfig, mapIndex: number): string {
+  private buildPrompt(content: string, config: CourseGenerationConfig, mapIndex: number, levelsToGenerate: number, startIndex: number): string {
     const difficultyDesc: Record<CourseGenerationConfig['difficultyMode'], string> = {
       uniform: '所有题目难度均匀分布',
       progressive: '难度从易到难递增',
@@ -37,13 +40,13 @@ class CourseGeneratorService {
     };
 
     return `
-你是一位专业的教育内容设计师。请根据以下材料生成学习关卡。
+你是一位专业的教育内容设计师。请严格、仅根据下方提供的材料生成学习关卡，禁止输出与材料无关的通用题（例如 Python 入门、随机常识等）。
 
 【输入材料】
 ${content.slice(0, 8000)}
 
 【生成要求】
-1. 生成 ${config.levelsPerMap} 个关卡
+1. 生成本批次 ${levelsToGenerate} 个关卡（本地图总关卡从第 ${startIndex + 1} 关开始累加）
 2. 这是第 ${mapIndex + 1} 张地图
 3. 难度分布: ${difficultyDesc[config.difficultyMode]}
 4. 题型分布: ${config.questionTypes.join('、')}
@@ -74,14 +77,16 @@ ${content.slice(0, 8000)}
   ]
 }
 
-注意:
+约束:
+- 所有地图名称、关卡标题、题干、选项、解析必须从输入材料提炼，不得凭空杜撰，也不得生成“Python 入门”这类无关内容。
+- 如果材料中信息不足以支撑关卡，请在 mapTitle 中给出“输入信息不足，无法生成”，并输出空 levels。
 - type 为 true_false 时，使用 statement + correctAnswer (boolean)
 - type 为 fill_blank 时，使用 question (含____) + correctAnswers (数组)
 `;
   }
 
-  private async generateMap(content: string, config: CourseGenerationConfig, mapIndex: number) {
-    const prompt = this.buildPrompt(content, config, mapIndex);
+  private async generateMap(content: string, config: CourseGenerationConfig, mapIndex: number, levelsToGenerate: number, startIndex: number) {
+    const prompt = this.buildPrompt(content, config, mapIndex, levelsToGenerate, startIndex);
     if (!apiKey) throw new Error('缺少 GEMINI_API_KEY，无法生成课程');
 
     const controller = new AbortController();
@@ -144,30 +149,44 @@ ${content.slice(0, 8000)}
     }
 
     const maps: { title: string; description: string; levels: ConceptLevel[] }[] = [];
+    const perMapBatches = Math.max(1, Math.ceil(config.levelsPerMap / LEVELS_PER_CALL));
+    const totalBatches = sourceChunks.length * perMapBatches;
+    let progressDone = 0;
 
     for (let i = 0; i < sourceChunks.length; i++) {
       const chunk = sourceChunks[i].text;
-      onProgress?.(i + 1, sourceChunks.length);
-      const mapData = await this.generateMap(chunk, config, i);
       const baseId = i * config.levelsPerMap;
-      const normalizedLevels: ConceptLevel[] = (mapData.levels || []).map((lvl: any, idx: number) => ({
-        id: baseId + idx + 1,
-        title: lvl.title || `关卡 ${idx + 1}`,
-        description: lvl.description || lvl.title || '',
-        type: 'concept',
-        difficulty: lvl.difficulty || 'easy',
-        map: mapData.mapTitle || sourceChunks[i].title || `地图 ${i + 1}`,
-        questions: lvl.question ? [lvl.question] : [],
-      }));
-      if (!normalizedLevels.length) {
+      const mergedLevels: ConceptLevel[] = [];
+      let usedTitle = '';
+      for (let batch = 0; batch < perMapBatches; batch++) {
+        const startIndex = batch * LEVELS_PER_CALL;
+        const need = Math.min(LEVELS_PER_CALL, config.levelsPerMap - startIndex);
+        if (need <= 0) break;
+        const mapData = await this.generateMap(chunk, { ...config, levelsPerMap: need }, i, need, startIndex);
+        const normalized: ConceptLevel[] = (mapData.levels || []).map((lvl: any, idx: number) => ({
+          id: baseId + startIndex + idx + 1,
+          title: lvl.title || `关卡 ${startIndex + idx + 1}`,
+          description: lvl.description || lvl.title || '',
+          type: 'concept',
+          difficulty: lvl.difficulty || 'easy',
+          map: mapData.mapTitle || sourceChunks[i].title || `地图 ${i + 1}`,
+          questions: lvl.question ? [lvl.question] : [],
+        }));
+        mergedLevels.push(...normalized);
+        usedTitle = usedTitle || mapData.mapTitle;
+        progressDone += 1;
+        onProgress?.(progressDone, totalBatches);
+        await new Promise((r) => setTimeout(r, 400));
+      }
+
+      if (!mergedLevels.length) {
         throw new Error(`地图 ${i + 1} 未生成任何关卡，请检查输入或模型输出。`);
       }
       maps.push({
-        title: mapData.mapTitle || sourceChunks[i].title || `地图 ${i + 1}`,
-        description: mapData.mapDescription || '',
-        levels: normalizedLevels,
+        title: usedTitle || sourceChunks[i].title || `地图 ${i + 1}`,
+        description: '',
+        levels: mergedLevels,
       });
-      await new Promise((r) => setTimeout(r, 800));
     }
 
     const allLevels = maps.flatMap((m) => m.levels);

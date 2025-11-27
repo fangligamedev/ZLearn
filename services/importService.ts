@@ -105,13 +105,24 @@ class ImportService {
 
       const mainMarkdown = await fetchMarkdown(url);
 
-      // 简单提取同域链接，递归抓取一级
+      // 简单提取同域链接，递归抓取一级，仅保留文档类链接，避免 _next/static 等资源产生 CORS 报错
+      const mainHost = new URL(url).hostname;
+      const allowedExt = ['', 'html', 'htm', 'md', 'markdown'];
+      const isDocLink = (u: URL) => {
+        const ext = u.pathname.includes('.')
+          ? (u.pathname.split('.').pop() || '').toLowerCase()
+          : '';
+        const blocked = ['png', 'jpg', 'jpeg', 'gif', 'svg', 'ico', 'webp', 'css', 'js'];
+        if (blocked.includes(ext)) return false;
+        if (u.pathname.includes('_next/static')) return false;
+        return allowedExt.includes(ext);
+      };
       const links = Array.from(mainMarkdown.matchAll(/\[[^\]]+]\((https?:\/\/[^)]+)\)/g))
         .map((m) => m[1])
         .filter((link) => {
           try {
             const u = new URL(link);
-            return u.hostname === new URL(url).hostname;
+            return u.hostname === mainHost && isDocLink(u);
           } catch {
             return false;
           }

@@ -4,6 +4,7 @@ import { courseGeneratorService, CourseGenerationConfig, DEFAULT_CONFIG } from '
 import { crawlerService, CrawledPage } from '../../services/crawlerService';
 import { Course } from '../../types';
 import { configService } from '../../services/configService';
+import { backupService } from '../../services/backupService';
 
 interface CourseCreatorProps {
   onComplete: (course: Course) => void;
@@ -27,6 +28,9 @@ const CourseCreator: React.FC<CourseCreatorProps> = ({ onComplete, onCancel }) =
   const [crawlMax, setCrawlMax] = useState<number>(50);
   const [isCrawling, setIsCrawling] = useState(false);
   const [sourceType, setSourceType] = useState<'file' | 'paste' | 'url' | 'crawl' | null>(null);
+  const [importingCourse, setImportingCourse] = useState(false);
+  const [crawlProgress, setCrawlProgress] = useState<number>(0);
+  const [crawlTimer, setCrawlTimer] = useState<number>(0);
 
   const handleFileUpload = async (e: React.ChangeEvent<HTMLInputElement>) => {
     const file = e.target.files?.[0];
@@ -41,6 +45,11 @@ const CourseCreator: React.FC<CourseCreatorProps> = ({ onComplete, onCancel }) =
       const result = await importService.import({ type: 'pdf', content: file });
       setImportResult(result);
       setCourseName(result.metadata.title || file.name.replace(/\.pdf$/i, ''));
+    } else if (ext === 'md' || ext === 'markdown') {
+      const text = await file.text();
+      const result = importService.parseMarkdown(text, file.name);
+      setImportResult(result);
+      setCourseName(result.metadata.title || file.name.replace(/\.md$/i, ''));
     } else {
       const text = await file.text();
       const result = await importService.import({ type: 'plain', content: text, name: file.name });
@@ -69,6 +78,48 @@ const CourseCreator: React.FC<CourseCreatorProps> = ({ onComplete, onCancel }) =
     setPages([]);
     setSelectedPages(new Set());
     setSourceType('url');
+  };
+
+  const handleCourseJsonImport = async (e: React.ChangeEvent<HTMLInputElement>) => {
+    const file = e.target.files?.[0];
+    if (!file) return;
+    setImportingCourse(true);
+    try {
+      const text = await file.text();
+      const parsed = JSON.parse(text);
+      const first = parsed?.courses?.[0];
+      const defaultName = first?.metadata?.name || '新课程';
+      const inputName = window.prompt('为导入的课程设置名称（同名将覆盖）', defaultName) || defaultName;
+      const slug =
+        inputName
+          .trim()
+          .toLowerCase()
+          .replace(/[^a-z0-9]+/g, '-')
+          .replace(/(^-|-$)/g, '') || 'custom-course';
+
+      const { imported, renamed } = await backupService.importCourses(text, {
+        overrideExisting: true,
+        mapCourse: (c) => ({
+          ...c,
+          id: slug,
+          metadata: { ...c.metadata, name: inputName },
+        }),
+      });
+      const renameMsg = renamed.length ? `\n已自动改名:\n${renamed.join('\n')}` : '';
+      alert(`导入课程完成：${imported} 个${renameMsg}`);
+      // 选中新导入/覆盖的课程并关闭弹窗
+      const refreshedCourses = configService.getCourses();
+      const importedCourse = refreshedCourses.find((c) => c.id === slug);
+      if (importedCourse) {
+        onComplete(importedCourse);
+      }
+    } catch (err) {
+      console.error('导入课程失败', err);
+      alert('导入课程失败，请检查文件格式');
+    } finally {
+      setImportingCourse(false);
+      e.target.value = '';
+    }
   };
 
   const saveCourseToConfig = (course: Course) => {
@@ -172,6 +223,14 @@ const CourseCreator: React.FC<CourseCreatorProps> = ({ onComplete, onCancel }) =
 {step === 'import' && (
   <div className="p-6 space-y-6">
     <div>
+      <label className="block text-sm font-medium mb-2">📦 导入课程 JSON（重建关卡）</label>
+      <label className="inline-flex items-center gap-2 px-4 py-2 bg-slate-700 hover:bg-slate-600 rounded-lg cursor-pointer">
+        {importingCourse ? '导入中...' : '选择课程 JSON 文件'}
+        <input type="file" accept=".json" onChange={handleCourseJsonImport} className="hidden" />
+      </label>
+      <p className="text-xs text-slate-400 mt-1">支持从“课程关卡导出”得到的 JSON，一键重建课程页签。</p>
+    </div>
+    <div>
       <label className="block text-sm font-medium mb-2">📄 上传 PDF 文档</label>
       <input
                 type="file"
@@ -242,16 +301,25 @@ const CourseCreator: React.FC<CourseCreatorProps> = ({ onComplete, onCancel }) =
             if (!crawlUrl) return;
             setIsCrawling(true);
             setErrorMsg('');
+            setCrawlProgress(0);
+            setCrawlTimer(30);
+            const interval = window.setInterval(() => {
+              setCrawlProgress((p) => (p < 90 ? p + 3 : p));
+              setCrawlTimer((t) => (t > 0 ? t - 1 : 0));
+            }, 1000);
             try {
               const crawled = await crawlerService.crawl(crawlUrl, { depth: crawlDepth, maxLinks: crawlMax });
               setPages(crawled);
               setSelectedPages(new Set(crawled.map((p) => p.url)));
               setSourceType('crawl');
+              setCrawlProgress(100);
             } catch (err) {
               console.error(err);
               setErrorMsg((err as any)?.message || '抓取失败');
             } finally {
               setIsCrawling(false);
+              setTimeout(() => setCrawlProgress(0), 800);
+              window.clearInterval(interval);
             }
           }}
           className="col-span-2 px-4 py-2 bg-indigo-600 hover:bg-indigo-500 rounded-xl disabled:bg-slate-600"
@@ -260,6 +328,21 @@ const CourseCreator: React.FC<CourseCreatorProps> = ({ onComplete, onCancel }) =
           {isCrawling ? '正在扫描导航...' : '扫描导航并选择页面'}
         </button>
       </div>
+
+      {isCrawling && (
+        <div className="col-span-2 mt-2 bg-slate-700 rounded-xl p-2">
+          <div className="flex items-center justify-between text-xs text-slate-200 mb-1">
+            <span>扫描中... 约剩 {crawlTimer}s</span>
+            <span>{Math.min(100, Math.round(crawlProgress))}%</span>
+          </div>
+          <div className="w-full bg-slate-800 rounded-lg h-2 overflow-hidden">
+            <div
+              className="h-2 bg-gradient-to-r from-blue-500 to-purple-500 transition-all duration-300"
+              style={{ width: `${Math.min(100, crawlProgress)}%` }}
+            />
+          </div>
+        </div>
+      )}
     </div>
 
     {importResult && (
